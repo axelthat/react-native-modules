@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly: Modal 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      },
+      undefined,
+      Object {
+        "display": "none",
+      },
+    ]
+  }
+  testID="wrapper"
+>
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "height": "100%",
+        "position": "absolute",
+        "top": 0,
+        "width": "100%",
+      }
+    }
+  >
+    <View
+      animatedStyle={
+        Object {
+          "value": Object {
+            "opacity": 0,
+          },
+        }
+      }
+      collapsable={false}
+      pointerEvents="auto"
+      style={
+        Object {
+          "backgroundColor": "#000000",
+          "bottom": 0,
+          "left": 0,
+          "opacity": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+    />
+  </View>
+  <View
+    animatedStyle={
+      Object {
+        "value": Object {
+          "transform": Array [
+            Object {
+              "translateY": 1290,
+            },
+          ],
+        },
+      }
+    }
+    collapsable={false}
+    forwardedRef={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    style={
+      Object {
+        "backgroundColor": "#ffffff",
+        "borderRadius": 15,
+        "bottom": 0,
+        "flex": 1,
+        "height": 1290,
+        "left": 0,
+        "marginTop": 44,
+        "padding": 10,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+        "transform": Array [
+          Object {
+            "translateY": 1290,
+          },
+        ],
+        "width": 750,
+      }
+    }
+    testID="modal"
+  >
+    <View
+      style={
+        Array [
+          Object {
+            "alignSelf": "center",
+            "backgroundColor": "#000000",
+            "borderRadius": 10,
+            "height": 5,
+            "opacity": 0.25,
+            "width": 60,
+          },
+          undefined,
+        ]
+      }
+    />
+  </View>
+</View>
+`;

@@ -1,0 +1,398 @@
+import Constants from "expo-constants"
+import React, {
+    useMemo,
+    useEffect,
+    useCallback,
+    useRef,
+    ReactNode,
+    useState,
+    forwardRef,
+    ReactElement,
+    Ref,
+    useImperativeHandle,
+    ForwardRefRenderFunction
+} from "react"
+import {
+    Dimensions,
+    FlatListProps,
+    ListRenderItem,
+    NativeScrollEvent,
+    NativeSyntheticEvent,
+    Pressable,
+    ScrollViewProps,
+    StyleSheet,
+    Text,
+    View,
+    ViewProps,
+    ViewStyle
+} from "react-native"
+import {
+    FlatList,
+    NativeViewGestureHandler,
+    PanGestureHandler,
+    ScrollView
+} from "react-native-gesture-handler"
+import Animated, {
+    Easing,
+    runOnJS,
+    useAnimatedGestureHandler,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming
+} from "react-native-reanimated"
+import makeStyles, { OVERLAY_OPACITY } from "./ModalStyle"
+
+const ENTER_TRANSITION: Animated.WithSpringConfig = {
+    damping: 20,
+    mass: 0.2
+}
+const EXIT_TRANSITION: Animated.WithSpringConfig = Object.assign(
+    {},
+    ENTER_TRANSITION
+)
+
+const OVERLAY_ENTER_TRANSITION: Animated.WithTimingConfig = {
+    duration: 200,
+    easing: Easing.linear
+}
+const OVERLAY_EXIT_TRANSITION: Animated.WithTimingConfig = Object.assign(
+    {},
+    OVERLAY_ENTER_TRANSITION,
+    {
+        duration: OVERLAY_ENTER_TRANSITION.duration! * 3
+    }
+)
+
+const SWIPE_VELOCITY = 500
+const CLOSE_WAIT_DURATION = 500
+
+export interface ModalProps<T> {
+    wrapperStyle?: ViewStyle
+    style?: ViewStyle
+    overlayStyle?: ViewStyle
+    swipeHandleStyle?: ViewStyle
+    fullPage?: boolean
+    hideSwipeHandle?: boolean
+    enterTransition?: Animated.WithSpringConfig
+    exitTransition?: Animated.WithSpringConfig
+    overlayEnterTransition?: Animated.WithTimingConfig
+    overlayExitTransition?: Animated.WithTimingConfig
+    swipeVelocity?: number
+    flatList?: FlatListProps<T>
+    scrollView?: boolean
+    scrollViewProps?: ScrollViewProps
+    children?: ReactNode | ReactNode[]
+}
+
+export interface ModalRef {
+    show: () => void
+    hide: () => void
+}
+
+const Modal = forwardRef<ModalRef, ModalProps<{}>>(
+    (
+        {
+            style,
+            overlayStyle,
+            wrapperStyle,
+            swipeHandleStyle,
+            hideSwipeHandle,
+            flatList,
+            scrollViewProps,
+            children,
+            fullPage = true,
+            enterTransition = ENTER_TRANSITION,
+            exitTransition = EXIT_TRANSITION,
+            overlayEnterTransition = OVERLAY_ENTER_TRANSITION,
+            overlayExitTransition = OVERLAY_EXIT_TRANSITION,
+            swipeVelocity = SWIPE_VELOCITY,
+            scrollView = false
+        },
+        ref
+    ) => {
+        const { statusBarHeight } = Constants
+
+        const styles = makeStyles()
+
+        const { height: winHeight, width: winWidth } = Dimensions.get("window")
+
+        const modalHeight =
+            (fullPage ? winHeight : winHeight / 2) - statusBarHeight
+        const modalWidth = winWidth
+
+        const [visible, setVisible] = useState(false)
+
+        const modalStyles = useMemo(
+            () => [
+                styles.modal,
+                {
+                    marginTop: fullPage
+                        ? statusBarHeight
+                        : winHeight - modalHeight,
+                    height: modalHeight,
+                    width: modalWidth,
+                    flex: 1
+                } as ViewStyle,
+                style
+            ],
+            [modalHeight, modalWidth]
+        )
+
+        let isScrollable = scrollView
+        if (flatList) {
+            isScrollable = true
+        }
+
+        const scrollYOffset = useSharedValue(0)
+        const panRef = useRef<PanGestureHandler>()
+        const scrollRef = useRef<ScrollView>()
+
+        const opacity = useSharedValue(0)
+        const animateOpacity = useAnimatedStyle(() => {
+            return {
+                opacity: opacity.value
+            }
+        })
+
+        const y = useSharedValue(modalHeight)
+        const animateY = useAnimatedStyle(() => {
+            return {
+                transform: [{ translateY: y.value }]
+            }
+        })
+
+        function scrollToTop() {
+            /**
+             * Setting animated to true doesn't
+             * quickly sets the scroll to 0. Since
+             * this function is invoked while dragging
+             * the scroll never reaches to 0 as RN
+             * constantly tries to animate with some
+             * duration. Hence, setting the animated
+             * to false.
+             */
+            scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false })
+        }
+
+        const swipe = useAnimatedGestureHandler({
+            onStart: (
+                e,
+                ctx: {
+                    startTime: number
+                    endTime: number
+                    initY: number
+                    cancel: boolean
+                }
+            ) => {
+                ctx.cancel = false
+                ctx.initY = y.value
+                ctx.startTime = +new Date()
+            },
+            onActive: (e, ctx) => {
+                /**
+                 * If scrolling stop drag related
+                 * functions
+                 */
+                if (scrollYOffset.value > 0) {
+                    ctx.cancel = true
+                    return
+                }
+
+                if (ctx.endTime) {
+                    const t = ctx.startTime - ctx.endTime
+                    if (t < CLOSE_WAIT_DURATION) {
+                        ctx.cancel = true
+                        return
+                    }
+                }
+
+                const nextY = ctx.initY + e.translationY
+                if (nextY < 0) return
+                /**
+                 * At this point scroll's y offset
+                 * is at 0. That means user is trying
+                 * to close the modal. Hence setting
+                 * the scroll's y offset to 0 and
+                 * initiating drag.
+                 */
+                runOnJS(scrollToTop)()
+                y.value = nextY
+                /**
+                 * Decrease opacity as we translate
+                 *
+                 * (1 / OVERLAY_OPACITY) brings the
+                 * value in between 0 to OVERLAY_OPACITY
+                 */
+                opacity.value =
+                    OVERLAY_OPACITY -
+                    nextY / modalHeight / (1 / OVERLAY_OPACITY)
+            },
+            onEnd: (e, ctx) => {
+                ctx.endTime = +new Date()
+                /**
+                 * If scrolling stop drag related
+                 * functions
+                 */
+                if (ctx.cancel) {
+                    return
+                }
+                /**
+                 * Swipe to close
+                 */
+                if (e.velocityY >= swipeVelocity!) {
+                    runOnJS(callToggle)(false)
+                    return
+                }
+                /**
+                 * Close modal when current drag offset
+                 * is half of modal's height
+                 */
+                if (y.value >= modalHeight / 2) {
+                    runOnJS(callToggle)(false)
+                } else {
+                    runOnJS(callToggle)(true)
+                }
+            }
+        })
+
+        // https://github.com/software-mansion/react-native-reanimated/issues/2165
+        function callToggle(show: boolean) {
+            toggle(show)
+        }
+
+        const toggle = useCallback((show: boolean) => {
+            if (show) {
+                setVisible(true)
+                opacity.value = withTiming(
+                    OVERLAY_OPACITY,
+                    overlayEnterTransition
+                )
+                y.value = withSpring(0, enterTransition)
+            } else {
+                opacity.value = withTiming(0, overlayExitTransition)
+                y.value = withSpring(modalHeight, exitTransition, f => {
+                    if (f) {
+                        runOnJS(setVisible)(false)
+                    }
+                })
+            }
+        }, [])
+
+        const setScrollOffset = (
+            e: NativeSyntheticEvent<NativeScrollEvent>
+        ) => {
+            scrollYOffset.value = e.nativeEvent.contentOffset.y
+        }
+
+        const show = () => toggle(true)
+        const hide = () => toggle(false)
+
+        /**
+         * Expose show/hide methods
+         */
+        useImperativeHandle(ref, () => ({
+            show,
+            hide
+        }))
+
+        const renderContent = () => {
+            if (flatList) {
+                /**
+                 * Currently react-native-gesture-handler
+                 * doesn't provide simultaneousHandlers prop
+                 * like the scroll view. Hence when scroll y
+                 * is at 0 you still can't drag the modal
+                 * to close.
+                 *
+                 * https://github.com/software-mansion/react-native-gesture-handler/issues/1494
+                 */
+                return (
+                    <FlatList
+                        // @ts-ignore
+                        ref={scrollRef}
+                        {...flatList}
+                        onScrollBeginDrag={setScrollOffset}
+                        onScrollEndDrag={setScrollOffset}
+                        testID="flatList"
+                    />
+                )
+            }
+
+            if (scrollView) {
+                return (
+                    <ScrollView
+                        // @ts-ignore
+                        ref={scrollRef}
+                        {...scrollViewProps}
+                        simultaneousHandlers={panRef}
+                        onScrollBeginDrag={setScrollOffset}
+                        onScrollEndDrag={setScrollOffset}
+                        testID="scrollView">
+                        {children}
+                    </ScrollView>
+                )
+            }
+
+            return children
+        }
+
+        return (
+            <View
+                testID="wrapper"
+                style={[
+                    styles.wrapper,
+                    wrapperStyle,
+                    {
+                        display: visible ? "flex" : "none"
+                    }
+                ]}>
+                <Pressable
+                    onPress={e => {
+                        const pressYLocation = e.nativeEvent.locationY
+                        if (pressYLocation < winHeight - modalHeight) {
+                            toggle(false)
+                        }
+                    }}
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        height: "100%",
+                        width: "100%"
+                    }}>
+                    <Animated.View
+                        style={[styles.overlay, overlayStyle, animateOpacity]}
+                        pointerEvents="auto"
+                    />
+                </Pressable>
+                <PanGestureHandler
+                    ref={panRef}
+                    onGestureEvent={swipe}
+                    simultaneousHandlers={isScrollable ? scrollRef : undefined}>
+                    <Animated.View
+                        style={[modalStyles, animateY]}
+                        testID="modal">
+                        {!hideSwipeHandle && (
+                            <View
+                                style={[styles.swipeHandle, swipeHandleStyle]}
+                            />
+                        )}
+                        {renderContent()}
+                    </Animated.View>
+                </PanGestureHandler>
+            </View>
+        )
+    }
+)
+
+Modal.defaultProps = {
+    fullPage: true,
+    enterTransition: ENTER_TRANSITION,
+    exitTransition: EXIT_TRANSITION,
+    overlayEnterTransition: OVERLAY_ENTER_TRANSITION,
+    overlayExitTransition: OVERLAY_EXIT_TRANSITION,
+    swipeVelocity: SWIPE_VELOCITY,
+    scrollView: false
+}
+
+export default Modal
