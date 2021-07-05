@@ -1,20 +1,11 @@
 import { isString } from "../../../util/helpers"
 import { QueryBuilder } from "./interface"
 
-interface Clauses {
-  selectClause: string
-  selectDistinct: boolean
-  whereClauses: string[]
-  orderByClauses: string[]
-  offset: number
-  limit: number
-}
-
-const CLAUSES: Clauses = {
+const CLAUSES = {
   selectClause: "*",
   selectDistinct: false,
-  whereClauses: [],
-  orderByClauses: [],
+  whereClauses: [] as string[],
+  orderByClauses: [] as string[],
   offset: 0,
   limit: 1
 }
