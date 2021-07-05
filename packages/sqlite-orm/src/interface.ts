@@ -45,7 +45,7 @@ type WhereFn<T> = (
 type OrderByFn<T> = (field: string, sortOpt: "ASC" | "DESC") => T
 
 /**
- * @param limit - Count of rows to delete/update
+ * @param limit - Count of rows to perform action against
  */
 type LimitFn<T> = (limit?: number) => T
 

@@ -14,7 +14,7 @@ if ! [[ -n $message ]]; then
     exit 1;
 fi
 
-if ! [[ $message =~ ^(feat|fix|refactor|perf|chore)(\(.*\))?: ]]; then
+if ! [[ $message =~ ^(feat|fix|refactor|perf|chore|docs)(\(.*\))?: ]]; then
     echo "${RED}Invalid commit message supplied${NC}"
     exit 1;
 fi
