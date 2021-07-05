@@ -78,9 +78,6 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     select: (...fields) => {
       clauses.selectClause = fields.join(",")
     },
-    count: () => {
-      return `SELECT sum([rows]) FROM sys.partitions WHERE object_id=object_id(${tableName}) and index_id in (0,1)`
-    },
     where: (field, sign, compareWith) => {
       clauses.whereClauses.push(`${field}${sign}${compareWith}`)
     },
@@ -89,6 +86,13 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     },
     limit: (limitCount = 1) => {
       clauses.limit = limitCount
+    },
+    count: () => {
+      const stmt = `SELECT sum([rows]) FROM sys.partitions WHERE object_id=object_id(${tableName}) and index_id in (0,1)`
+
+      reset()
+
+      return stmt
     },
     find: (offsetCount = 0) => {
       clauses.offset = offsetCount
