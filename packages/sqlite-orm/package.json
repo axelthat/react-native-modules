@@ -1,0 +1,13 @@
+{
+    "name": "@rnmodules/expo-orm",
+    "version": "0.0.1",
+    "scripts": {
+        "build": "tsc --project ./tsconfig.prod.json",
+        "release": "npm publish --access public --no-git-checks"
+    },
+    "peerDependencies": {
+        "react": "17.0.2",
+        "react-native": "0.64.2",
+        "expo-sqlite": "^9.2.1"
+    }
+}
