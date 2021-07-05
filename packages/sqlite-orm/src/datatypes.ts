@@ -3,6 +3,9 @@ import { DataTypesObj } from "./interface"
 const DEFAULT_STRING_LENGTH = 255
 const DEFAULT_CHAR_LENGTH = 255
 
+const PRIMARY_KEY = "PRIMARY KEY"
+const INDEX = "INDEX"
+const UNIQUE = "UNIQUE"
 const STRING = "VARCHAR(#)"
 const CHAR = "CHAR(#)"
 const TEXT = "TEXT"
@@ -17,95 +20,115 @@ const DOUBLE = "DOUBLE"
 const FLOAT = "FLOAT"
 const DATE = "DATE"
 const DATETIME = "DATETIME"
+const DEFAULT = "DEFAULT"
 
 const datatypes = (): DataTypesObj => {
-  let stmt = ""
-
-  const types = {
-    _string: "",
-    _char: "",
-    _text: "",
-    _unsigned: "",
-    _int: "",
-    _integer: "",
-    _tinyInt: "",
-    _smallInt: "",
-    _mediumInt: "",
-    _bigInt: "",
-    _double: "",
-    _float: "",
-    _date: "",
-    _dateTime: ""
-  }
+  /**
+   * Using map because it remembers
+   * the insertion order
+   */
+  const types = new Map<string, string | null>([
+    ["primary", null],
+    ["index", null],
+    ["unique", null],
+    ["string", null],
+    ["char", null],
+    ["text", null],
+    ["unsigned", null],
+    ["int", null],
+    ["integer", null],
+    ["tinyInt", null],
+    ["smallInt", null],
+    ["mediumInt", null],
+    ["bigInt", null],
+    ["double", null],
+    ["float", null],
+    ["date", null],
+    ["dateTime", null],
+    ["default", null]
+  ])
 
   return {
-    ...types,
-    build() {
-      const keys = Object.keys(types)
-      for (const k of keys) {
-        const key = k as keyof typeof types
-        if (this[key]) {
-          stmt = `${stmt} ${this[key]}`
+    build: () => {
+      let stmt: string[] = []
+      types.forEach(value => {
+        if (value !== null) {
+          stmt.push(value)
         }
-      }
+      })
 
-      stmt = stmt.trim()
-      return stmt
+      return stmt.join(" ")
     },
-    string(length: number = DEFAULT_STRING_LENGTH) {
-      this._string = STRING.replace("#", length.toString())
+    index() {
+      types.set("index", INDEX)
       return this
     },
-    char(length: number = DEFAULT_CHAR_LENGTH) {
-      this._char = CHAR.replace("#", length.toString())
+    primary() {
+      types.set("primary", PRIMARY_KEY)
+      return this
+    },
+    unique() {
+      types.set("unique", UNIQUE)
+      return this
+    },
+    default(value) {
+      types.set("default", `${DEFAULT} ${value.toString()}`)
+      return this
+    },
+    string(length = DEFAULT_STRING_LENGTH) {
+      types.set("string", STRING.replace("#", length.toString()))
+      return this
+    },
+    char(length = DEFAULT_CHAR_LENGTH) {
+      types.set("char", CHAR.replace("#", length.toString()))
       return this
     },
     text() {
-      this._text = TEXT
+      types.set("text", TEXT)
       return this
     },
     unsigned() {
-      this._unsigned = UNSIGNED
+      types.set("unsigned", UNSIGNED)
       return this
     },
     int() {
-      this._int = INT
+      types.set("int", INT)
       return this
     },
     integer() {
-      this._integer = INTEGER
+      types.set("integer", INTEGER)
       return this
     },
     tinyInt() {
-      this._tinyInt = TINYINT
+      types.set("tinyInt", TINYINT)
       return this
     },
     smallInt() {
-      this._smallInt = SMALLINT
+      types.set("smallInt", SMALLINT)
       return this
     },
     mediumInt() {
-      this._mediumInt = MEDIUMINT
+      types.set("mediumInt", MEDIUMINT)
       return this
     },
     bigInt() {
-      this._bigInt = BIGINT
+      types.set("bigInt", BIGINT)
       return this
     },
     double() {
-      this._double = DOUBLE
+      types.set("double", DOUBLE)
       return this
     },
     float() {
-      this._float = FLOAT
+      types.set("float", FLOAT)
       return this
     },
     date() {
-      this._date = DATE
+      types.set("date", DATE)
       return this
     },
     dateTime() {
-      this._dateTime = DATETIME
+      types.set("dateTime", DATETIME)
       return this
     }
   }

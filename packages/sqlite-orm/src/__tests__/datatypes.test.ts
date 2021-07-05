@@ -31,6 +31,9 @@ describe("sqlite-orm", () => {
       stmt = datatypes().bigInt().build()
       expect(stmt).toBe("BIGINT")
 
+      stmt = datatypes().unsigned().int().build()
+      expect(stmt).toBe("UNSIGNED INT")
+
       stmt = datatypes().int().unsigned().build()
       expect(stmt).toBe("UNSIGNED INT")
     })
@@ -57,8 +60,31 @@ describe("sqlite-orm", () => {
       expect(stmt).toBe("DATETIME")
     })
 
+    test("primary", () => {
+      let stmt = datatypes().primary().build()
+      expect(stmt).toBe("PRIMARY KEY")
+    })
+
+    test("index", () => {
+      let stmt = datatypes().index().build()
+      expect(stmt).toBe("INDEX")
+    })
+
+    test("unique", () => {
+      let stmt = datatypes().unique().build()
+      expect(stmt).toBe("UNIQUE")
+    })
+
+    test("default", () => {
+      let stmt = datatypes().default("Hello World").build()
+      expect(stmt).toBe("DEFAULT Hello World")
+    })
+
     test("all stmt", () => {
       let stmt = datatypes()
+        .primary()
+        .index()
+        .unique()
         .string()
         .char()
         .text()
@@ -73,10 +99,11 @@ describe("sqlite-orm", () => {
         .float()
         .date()
         .dateTime()
+        .default("Test")
         .build()
 
       expect(stmt).toBe(
-        "VARCHAR(255) CHAR(255) TEXT UNSIGNED INT INTEGER TINYINT SMALLINT MEDIUMINT BIGINT DOUBLE FLOAT DATE DATETIME"
+        "PRIMARY KEY UNIQUE VARCHAR(255) CHAR(255) TEXT UNSIGNED INT INTEGER TINYINT SMALLINT MEDIUMINT BIGINT DOUBLE FLOAT DATE DATETIME DEFAULT Test"
       )
     })
   })

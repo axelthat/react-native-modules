@@ -3,23 +3,12 @@ export interface OrmFunctions {
 }
 
 export interface DataTypesObj {
-  _unsigned: string
-  _int: string
-  _integer: string
-  _tinyInt: string
-  _smallInt: string
-  _bigInt: string
-  _mediumInt: string
-  _double: string
-  _float: string
-  _string: string
-  _char: string
-  _text: string
-  _date: string
-  _dateTime: string
-
   build: () => string
 
+  default: (value: string | number) => DataTypesObj
+  primary: () => DataTypesObj
+  index: () => DataTypesObj
+  unique: () => DataTypesObj
   unsigned: () => DataTypesObj
   int: () => DataTypesObj
   integer: () => DataTypesObj
