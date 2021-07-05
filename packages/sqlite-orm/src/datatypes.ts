@@ -57,7 +57,7 @@ const datatypes = (): DataTypesObj => {
       return this
     },
     char(length: number = DEFAULT_CHAR_LENGTH) {
-      this._string = CHAR.replace("#", length.toString())
+      this._char = CHAR.replace("#", length.toString())
       return this
     },
     text() {

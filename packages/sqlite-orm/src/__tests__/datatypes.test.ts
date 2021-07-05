@@ -13,47 +13,47 @@ describe("sqlite-orm", () => {
     })
 
     test("int", () => {
-      let stmt = datatypes().int()
+      let stmt = datatypes().int().build()
       expect(stmt).toBe("INT")
 
-      stmt = datatypes().integer()
+      stmt = datatypes().integer().build()
       expect(stmt).toBe("INTEGER")
 
-      stmt = datatypes().tinyInt()
+      stmt = datatypes().tinyInt().build()
       expect(stmt).toBe("TINYINT")
 
-      stmt = datatypes().smallInt()
+      stmt = datatypes().smallInt().build()
       expect(stmt).toBe("SMALLINT")
 
-      stmt = datatypes().mediumInt()
+      stmt = datatypes().mediumInt().build()
       expect(stmt).toBe("MEDIUMINT")
 
-      stmt = datatypes().bigInt()
+      stmt = datatypes().bigInt().build()
       expect(stmt).toBe("BIGINT")
 
-      stmt = datatypes().int().unsigned()
-      expect(stmt).toBe("INT")
+      stmt = datatypes().int().unsigned().build()
+      expect(stmt).toBe("UNSIGNED INT")
     })
 
     test("double/float", () => {
-      let stmt = datatypes().double()
+      let stmt = datatypes().double().build()
       expect(stmt).toBe("DOUBLE")
 
-      stmt = datatypes().double().unsigned()
+      stmt = datatypes().double().unsigned().build()
       expect(stmt).toBe("UNSIGNED DOUBLE")
 
-      stmt = datatypes().float()
+      stmt = datatypes().float().build()
       expect(stmt).toBe("FLOAT")
 
-      stmt = datatypes().float().unsigned()
+      stmt = datatypes().float().unsigned().build()
       expect(stmt).toBe("UNSIGNED FLOAT")
     })
 
     test("date", () => {
-      let stmt = datatypes().date()
+      let stmt = datatypes().date().build()
       expect(stmt).toBe("DATE")
 
-      stmt = datatypes().dateTime()
+      stmt = datatypes().dateTime().build()
       expect(stmt).toBe("DATETIME")
     })
 
@@ -81,5 +81,3 @@ describe("sqlite-orm", () => {
     })
   })
 })
-
-export {}
