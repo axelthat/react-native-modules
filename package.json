@@ -21,6 +21,7 @@
     "release": "node scripts/release.js"
   },
   "dependencies": {
+    "expo-sqlite": "^9.2.1",
     "react": "17.0.2",
     "react-native": "0.64.2",
     "react-native-gesture-handler": "^1.10.3",
@@ -36,16 +37,16 @@
     "@types/react-native": "^0.64.10",
     "@types/react-test-renderer": "^17.0.1",
     "babel-jest": "^27.0.6",
+    "chalk": "^4.1.1",
+    "conventional-changelog-cli": "^2.1.1",
+    "conventional-changelog-conventionalcommits": "^4.6.0",
     "eslint": "^7.29.0",
     "jest": "^27.0.6",
     "jest-expo": "^42.0.0",
     "metro-react-native-babel-preset": "^0.66.0",
     "react-test-renderer": "17.0.2",
     "regenerator-runtime": "^0.13.7",
-    "typescript": "^4.3.5",
-    "chalk": "^4.1.1",
-    "conventional-changelog-cli": "^2.1.1",
-    "conventional-changelog-conventionalcommits": "^4.6.0"
+    "typescript": "^4.3.5"
   },
   "resolutions": {
     "@types/react": "^17",
@@ -57,7 +58,7 @@
       "./jest-setup.js"
     ],
     "testMatch": [
-      "**/__tests__/**/datatypes.(spec|test).[jt]s?(x)"
+      "**/__tests__/**/orm.(spec|test).[jt]s?(x)"
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!(jest-)?@react-native|react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"

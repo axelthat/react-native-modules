@@ -1,5 +1,101 @@
+import { SQLError, SQLResultSet } from "expo-sqlite"
+import { Result } from "../../../util/helpers"
+
+export type OrmError = Result<null, SQLError>
+
+/**
+ * @param fields - List of columns to add in a table
+ *
+ * @param createIfNotExists - Create table only if the table doesn't exist
+ *
+ * @returns
+ */
+type CreateTableFn<T> = (
+  fields: Record<string, DataTypesObj>,
+  createIfNotExists?: boolean
+) => T
+
+/**
+ * @param fields - List of columns to fetch. Default is "*"
+ */
+type SelectFn<T> = (...fields: string[]) => T
+
+type CountFn<T> = () => T
+
+type DistinctFn<T> = () => T
+
+/**
+ * @param field - Field to compare
+ *
+ * @param sign - Comparision operator. Default is "="
+ *
+ * @param value - Value to compare field with
+ */
+type WhereFn<T> = (
+  field: string,
+  sign: "=" | ">=" | "<=" | "<>" | "like",
+  value: string
+) => T
+
+/**
+ * @param field - Field to sort
+ *
+ * @param sortOpt - Sorting option. Either ascending or descending. Default is "DESC"
+ */
+type OrderByFn<T> = (field: string, sortOpt: "ASC" | "DESC") => T
+
+/**
+ * @param limit - Count of rows to delete/update
+ */
+type LimitFn<T> = (limit?: number) => T
+
+/**
+ * @param fields - Fields to insert into a table
+ */
+type InsertFn<T> = (fields: Record<string, string | number>) => T
+
+/**
+ * @param fields - Fields to update in a table
+ */
+type UpdateFn<T> = (fields: Record<string, string | number>) => T
+
+/**
+ * @param offset - Offset to skip rows from
+ *
+ * @param limit - Amount of rows to fetch after offset
+ */
+type FindFn<T> = (offset?: number) => T
+
+type DeleteFn<T> = () => T
+
+export interface QueryBuilder {
+  createTable: CreateTableFn<string>
+  find: FindFn<string>
+  select: SelectFn<void>
+  distinct: DistinctFn<void>
+  where: WhereFn<void>
+  orderBy: OrderByFn<void>
+  limit: LimitFn<void>
+  count: CountFn<string>
+  insert: InsertFn<string>
+  update: UpdateFn<string>
+  delete: DeleteFn<string>
+}
+
+type OrmFunctionReturnType = Promise<Result<SQLResultSet, SQLError>>
+
 export interface OrmFunctions {
-  createTable: () => void
+  createTable: CreateTableFn<OrmFunctionReturnType>
+  find: FindFn<OrmFunctionReturnType>
+  select: SelectFn<OrmFunctions>
+  distinct: DistinctFn<OrmFunctions>
+  where: WhereFn<OrmFunctions>
+  orderBy: OrderByFn<OrmFunctions>
+  limit: LimitFn<OrmFunctions>
+  count: CountFn<OrmFunctionReturnType>
+  insert: InsertFn<OrmFunctionReturnType>
+  update: UpdateFn<OrmFunctionReturnType>
+  delete: DeleteFn<OrmFunctionReturnType>
 }
 
 export interface DataTypesObj {
