@@ -3,6 +3,8 @@ import { Result } from "./util"
 
 export type OrmError = Result<null, SQLError>
 
+type FieldsType = Record<string, string | number>
+
 /**
  * @param fields - List of columns to add in a table
  *
@@ -72,12 +74,12 @@ type LimitFn<T> = (limit?: number) => T
 /**
  * @param fields - Fields to insert into a table
  */
-type InsertFn<T> = (fields: Record<string, string | number>) => T
+type InsertFn<T> = <F = FieldsType>(fields: F) => T
 
 /**
  * @param fields - Fields to update in a table
  */
-type UpdateFn<T> = (fields: Record<string, string | number>) => T
+type UpdateFn<T> = <F = FieldsType>(fields: F) => T
 
 /**
  * @param offset - Offset to skip rows from
@@ -104,12 +106,17 @@ export interface QueryBuilder {
   orderBy: OrderByFn<void>
   limit: LimitFn<void>
   count: CountFn<string>
-  insert: InsertFn<[string, (string | number)[]]>
-  update: UpdateFn<[string, (string | number)[]]>
+  insert: InsertFn<[string, any]>
+  update: UpdateFn<[string, any]>
   delete: DeleteFn<string>
 }
 
-type OrmFunctionReturnType = Promise<Result<SQLResultSet, SQLError>>
+export type SQLResult = {
+  insertId?: string | number
+  length: number
+  data: any[]
+}
+export type OrmFunctionReturnType = Promise<Result<SQLResult, SQLError>>
 
 export interface OrmFunctions {
   createTable: CreateTableFn<OrmFunctionReturnType>

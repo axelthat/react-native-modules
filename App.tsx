@@ -5,6 +5,11 @@ import { useOrm, datatypes } from "./packages/sqlite-orm/src"
 import { FileSystem } from "react-native-unimodules"
 import { openDatabase } from "expo-sqlite"
 
+interface User {
+  name: string
+  surname: string
+}
+
 const App: React.FC = () => {
   const modalRef = useRef<ModalRef>(null)
 
@@ -12,6 +17,33 @@ const App: React.FC = () => {
   const db = openDatabase("sql.db")
 
   useEffect(() => {
+    orm
+      .find()
+      .then(res => {
+        // const rows: any = res.unwrap()?.rows
+        // for (const row of rows) {
+        //   console.log(row)
+        // }
+        const data: User[] | undefined = res.unwrap()?.data
+        console.log(data)
+        // console.log(res.unwrap()?.rows)
+      })
+      .catch(err => {
+        console.log(err.unwrapErr())
+      })
+    // orm
+    //   .insert({
+    //     name: "Hello World",
+    //     surname: "Hello World",
+    //     age: 12,
+    //     username: "hello-asgafbttrbbktbnrtvbb"
+    //   })
+    //   .then(res => {
+    //     // console.log(res.unwrap())
+    //   })
+    //   .catch(err => {
+    //     console.log("##", err.unwrapErr())
+    //   })
     // orm
     //   .createVirtualTable(["name"], "users", "id")
     //   .then(res => {
@@ -20,15 +52,17 @@ const App: React.FC = () => {
     //   .catch(err => {
     //     console.log(err.unwrapErr())
     //   })
-    orm
-      .match("Hello")
-      .find()
-      .then(res => {
-        console.log(res.unwrap())
-      })
-      .catch(err => {
-        console.log(err.unwrapErr())
-      })
+    // orm
+    //   .insert<User>({
+    //     name: "AA",
+    //     surname: "as"
+    //   })
+    //   .then(res => {
+    //     console.log(res.unwrap())
+    //   })
+    //   .catch(err => {
+    //     console.log(err.unwrapErr())
+    //   })
     // db.transaction(tx => {
     //   tx.executeSql(
     //     `CREATE TABLE IF NOT EXISTS users(

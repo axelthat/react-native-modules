@@ -158,7 +158,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       let values = ""
 
       const iter = Object.keys(fields)
-      const valuesArr: (string | number)[] = new Array(iter.length)
+      const valuesArr: any[] = new Array(iter.length)
 
       let idx = 0
       for (const k of iter) {
@@ -184,7 +184,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     update: fields => {
       let columnToValuesMapped = ""
       const iter = Object.keys(fields)
-      const valuesArr: (string | number)[] = new Array(iter.length)
+      const valuesArr: any[] = new Array(iter.length)
 
       let idx = 0
       for (const k of iter) {

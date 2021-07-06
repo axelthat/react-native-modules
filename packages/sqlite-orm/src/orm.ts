@@ -4,7 +4,7 @@ import {
   SQLResultSet,
   WebSQLDatabase
 } from "expo-sqlite"
-import { OrmFunctions } from "./interface"
+import { OrmFunctionReturnType, OrmFunctions, SQLResult } from "./interface"
 import { createResult, Result } from "./util"
 import queryBuilder from "./query_builder"
 
@@ -39,7 +39,6 @@ export const useOrm = (
     },
     find: (...args) => {
       const stmt = builder.find(...args)
-      console.log(stmt)
       return executeQuery(db, stmt)
     },
     select(...args) {
@@ -91,12 +90,12 @@ export const useOrm = (
  * @param stmt - Query statement
  * @returns
  */
-const executeQuery = <T extends (string | number)[]>(
+const executeQuery = (
   db: WebSQLDatabase,
   stmt: string,
-  values?: T
-): Promise<Result<SQLResultSet, SQLError>> => {
-  const result = createResult<SQLResultSet, SQLError>()
+  values?: any[]
+): OrmFunctionReturnType => {
+  const result = createResult<SQLResult, SQLError>()
 
   return new Promise((resolve, reject) => {
     db.transaction(
@@ -104,7 +103,14 @@ const executeQuery = <T extends (string | number)[]>(
         tx.executeSql(
           stmt,
           values ?? [],
-          (_, res) => resolve(result.ok(res)),
+          (_, res) =>
+            resolve(
+              result.ok({
+                insertId: res.insertId,
+                length: res.rows.length,
+                data: (res.rows as any)._array
+              })
+            ),
           (_, e) => {
             reject(result.error(e))
             return false
