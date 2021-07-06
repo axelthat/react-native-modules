@@ -42,7 +42,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
   }
 
   return {
-    createTable: (fields, createIfNotExists) => {
+    createTable: (fields, createIfNotExists = true) => {
       let columns: string[] = []
       let indexes: string[] = []
       let foreignKeys: string[] = []
@@ -89,6 +89,24 @@ export default function queryBuilder(tableName: string): QueryBuilder {
         ${foreignKeys.join(",\n")}
       );
       ${indexes.join("\n")}`
+
+      reset()
+
+      return stmt
+    },
+    createVirtualTable: (
+      fields,
+      table,
+      primaryKey,
+      createIfNotExists = true
+    ) => {
+      const stmt = `CREATE VIRTUAL TABLE ${
+        createIfNotExists ? "IF NOT EXISTS" : ""
+      } ${tableName} USING fts5(
+        ${fields.join(",\n")},
+        content='${table}', 
+        content_rowid='${primaryKey}' 
+      );`
 
       reset()
 

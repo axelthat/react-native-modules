@@ -16,14 +16,22 @@ type CreateTableFn<T> = (
 ) => T
 
 /**
- * @param fields - List of columns to add in a table
+ * @param indexable - List of indexable fields
+ *
+ * @param table - Main table where the data should
+ * be indexed from
+ *
+ * @param primaryKey - Main table's column name which uniquely
+ * identifies the data. Most probably the primary key of the table.
  *
  * @param createIfNotExists - Create table only if the table doesn't exist
  *
  * @returns
  */
 type CreateVirtualTableFn<T> = (
-  fields: Record<string, DataTypesObj>,
+  indexables: string[],
+  table: string,
+  primaryKey: string,
   createIfNotExists?: boolean
 ) => T
 
@@ -82,7 +90,7 @@ type DeleteFn<T> = () => T
 
 export interface QueryBuilder {
   createTable: CreateTableFn<string>
-  // createVirtualTable: CreateVirtualTableFn<string>
+  createVirtualTable: CreateVirtualTableFn<string>
   find: FindFn<string>
   select: SelectFn<void>
   distinct: DistinctFn<void>
@@ -99,7 +107,7 @@ type OrmFunctionReturnType = Promise<Result<SQLResultSet, SQLError>>
 
 export interface OrmFunctions {
   createTable: CreateTableFn<OrmFunctionReturnType>
-  // createVirtualTable: CreateVirtualTableFn<OrmFunctionReturnType>
+  createVirtualTable: CreateVirtualTableFn<OrmFunctionReturnType>
   find: FindFn<OrmFunctionReturnType>
   select: SelectFn<OrmFunctions>
   distinct: DistinctFn<OrmFunctions>

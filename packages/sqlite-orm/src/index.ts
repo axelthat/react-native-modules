@@ -30,6 +30,10 @@ const useOrm = (databaseName: string, tableName: string): OrmFunctions => {
       const stmt = builder.createTable(fields, createIfNotExists)
       return executeQuery(db, stmt)
     },
+    createVirtualTable: (...args) => {
+      const stmt = builder.createVirtualTable(...args)
+      return executeQuery(db, stmt)
+    },
     find: offset => {
       const stmt = builder.find(offset)
       return executeQuery(db, stmt)
