@@ -4,7 +4,7 @@ const chalk = require("chalk")
 const { execSync } = require("child_process")
 
 const DIR = path.join(__dirname, "/..")
-const PACKAGES = { modal: true }
+const PACKAGES = { modal: true, ["sqlite-orm"]: true }
 
 const cliArgs = process.argv.slice(2)
 
