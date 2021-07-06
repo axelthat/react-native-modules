@@ -22,6 +22,7 @@ const FLOAT = "FLOAT"
 const DATE = "DATE"
 const DATETIME = "DATETIME"
 const DEFAULT = "DEFAULT"
+const FOREIGN_KEY = "FOREIGN_KEY"
 
 const datatypes = (): DataTypesObj => {
   /**
@@ -47,7 +48,8 @@ const datatypes = (): DataTypesObj => {
     [DATE, null],
     [DATETIME, null],
     [UNIQUE, null],
-    [DEFAULT, null]
+    [DEFAULT, null],
+    [FOREIGN_KEY, null]
   ])
 
   return {
@@ -135,6 +137,16 @@ const datatypes = (): DataTypesObj => {
     },
     dateTime() {
       types.set(DATETIME, DATETIME)
+      return this
+    },
+    foreign(table, field, on = ["delete", "no action"]) {
+      const action = on[0] ?? "delete"
+      const actionType = on[1] ?? "no action"
+
+      types.set(
+        FOREIGN_KEY,
+        `${FOREIGN_KEY}:[\"${table}\",\"${field}\",\"${action}\",\"${actionType}\"]:`
+      )
       return this
     }
   }

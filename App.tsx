@@ -50,18 +50,21 @@ const App: React.FC = () => {
         name: datatypes().string().index(),
         surname: datatypes().string().index(),
         age: datatypes().smallInt().unsigned(),
-        username: datatypes().unique().string()
+        username: datatypes()
+          .unique()
+          .string()
+          .foreign("customers", "username", ["delete", "cascade"])
       })
       .then(res => {
-        orm
-          .limit(2)
-          .find()
-          .then(res => {
-            console.log(res.unwrap()?.rows)
-          })
-          .catch(err => {
-            console.log(err.unwrapErr())
-          })
+        // orm
+        //   .limit(2)
+        //   .find()
+        //   .then(res => {
+        //     console.log(res.unwrap()?.rows)
+        //   })
+        //   .catch(err => {
+        //     console.log(err.unwrapErr())
+        //   })
         // orm
         //   .select("name", "username")
         //   .orderBy("name", "ASC")

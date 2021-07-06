@@ -45,6 +45,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     createTable: (fields, createIfNotExists) => {
       let columns: string[] = []
       let indexes: string[] = []
+      let foreignKeys: string[] = []
 
       for (const name of Object.keys(fields)) {
         const field = fields[name]
@@ -65,13 +66,27 @@ export default function queryBuilder(tableName: string): QueryBuilder {
           stmt = stmt.replace(/\s?INDEX\s?/, " ")
         }
 
+        if (stmt.includes("FOREIGN_KEY")) {
+          const regex = /FOREIGN_KEY:(.*?):/
+          const st = stmt.match(regex)
+          if (st && st[1]) {
+            const [t, f, a, at] = JSON.parse(st && st[1])
+            foreignKeys.push(
+              `FOREIGN KEY (${name}) REFERENCES ${t} (${f}) ON ${a.toUpperCase()} ${at.toUpperCase()}`
+            )
+            stmt = stmt.replace(regex, "")
+          }
+        }
+
         columns.push(stmt)
       }
 
       const stmt = `CREATE TABLE ${
         createIfNotExists ? "IF NOT EXISTS" : ""
       } ${tableName}(
-        ${columns.join(",\n")}
+        ${columns.join(",\n")}${foreignKeys.length ? "," : ""}
+
+        ${foreignKeys.join(",\n")}
       );
       ${indexes.join("\n")}`
 

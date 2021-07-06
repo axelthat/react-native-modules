@@ -117,7 +117,6 @@ export interface DataTypesObj {
 
   autoincrement: () => DataTypesObj
   primary: () => DataTypesObj
-  index: () => DataTypesObj
   unique: () => DataTypesObj
   unsigned: () => DataTypesObj
   int: () => DataTypesObj
@@ -134,4 +133,10 @@ export interface DataTypesObj {
   date: () => DataTypesObj
   dateTime: () => DataTypesObj
   default: (value: string | number) => DataTypesObj
+  index: () => DataTypesObj
+  foreign: (
+    table: string,
+    field: string,
+    on?: ["update" | "delete", "cascade" | "no action"]
+  ) => DataTypesObj
 }
