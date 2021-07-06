@@ -77,13 +77,29 @@ describe("sqlite-orm", () => {
 
     test("default", () => {
       let stmt = datatypes().default("Hello World").build()
-      expect(stmt).toBe("DEFAULT Hello World")
+      expect(stmt).toBe("DEFAULT 'Hello World'")
+    })
+
+    test("autoincrement", () => {
+      let stmt = datatypes().autoincrement().build()
+      expect(stmt).toBe("AUTOINCREMENT")
+    })
+
+    test("foreign", () => {
+      let stmt = datatypes()
+        .foreign("customers", "user_id", ["delete", "cascade"])
+        .build()
+      expect(stmt).toBe(
+        //prettier-ignore
+        'FOREIGN_KEY:[\"customers\",\"user_id\",\"delete\",\"cascade\"]:'
+      )
     })
 
     test("all stmt", () => {
       let stmt = datatypes()
         .primary()
         .index()
+        .foreign("customers", "user_id", ["delete", "cascade"])
         .unique()
         .string()
         .char()
@@ -103,7 +119,8 @@ describe("sqlite-orm", () => {
         .build()
 
       expect(stmt).toBe(
-        "PRIMARY KEY UNIQUE VARCHAR(255) CHAR(255) TEXT UNSIGNED INT INTEGER TINYINT SMALLINT MEDIUMINT BIGINT DOUBLE FLOAT DATE DATETIME DEFAULT Test"
+        // prettier-ignore
+        "PRIMARY KEY INDEX VARCHAR(255) CHAR(255) TEXT UNSIGNED INT INTEGER TINYINT SMALLINT MEDIUMINT BIGINT DOUBLE FLOAT DATE DATETIME UNIQUE DEFAULT 'Test' FOREIGN_KEY:[\"customers\",\"user_id\",\"delete\",\"cascade\"]:"
       )
     })
   })
