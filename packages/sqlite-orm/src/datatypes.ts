@@ -24,7 +24,7 @@ const DATETIME = "DATETIME"
 const DEFAULT = "DEFAULT"
 const FOREIGN_KEY = "FOREIGN_KEY"
 
-const datatypes = (): DataTypesObj => {
+export const datatypes = (): DataTypesObj => {
   /**
    * Using map because it remembers
    * the insertion order
@@ -151,5 +151,3 @@ const datatypes = (): DataTypesObj => {
     }
   }
 }
-
-export default datatypes

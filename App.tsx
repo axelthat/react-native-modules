@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react"
 import { FlatList, Text, View } from "react-native"
 import Modal, { ModalRef } from "./packages/modal/src"
-import useOrm from "./packages/sqlite-orm/src"
-import datatypes from "./packages/sqlite-orm/src/datatypes"
+import { useOrm, datatypes } from "./packages/sqlite-orm/src"
 import { FileSystem } from "react-native-unimodules"
 import { openDatabase } from "expo-sqlite"
 

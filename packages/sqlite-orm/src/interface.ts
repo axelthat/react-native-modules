@@ -1,5 +1,5 @@
 import { SQLError, SQLResultSet } from "expo-sqlite"
-import { Result } from "../../../util/helpers"
+import { Result } from "./util"
 
 export type OrmError = Result<null, SQLError>
 
