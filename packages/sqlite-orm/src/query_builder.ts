@@ -83,7 +83,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       clauses.selectClause = fields.join(",")
     },
     where: (field, sign, compareWith) => {
-      clauses.whereClauses.push(`${field}${sign}${compareWith}`)
+      clauses.whereClauses.push(`${field}${sign}'${compareWith}'`)
     },
     orderBy: (field, sortOpt) => {
       clauses.orderByClauses.push(`${field} ${sortOpt}`)

@@ -115,7 +115,7 @@ export interface OrmFunctions {
 export interface DataTypesObj {
   build: () => string
 
-  default: (value: string | number) => DataTypesObj
+  autoincrement: () => DataTypesObj
   primary: () => DataTypesObj
   index: () => DataTypesObj
   unique: () => DataTypesObj
@@ -133,4 +133,5 @@ export interface DataTypesObj {
   text: () => DataTypesObj
   date: () => DataTypesObj
   dateTime: () => DataTypesObj
+  default: (value: string | number) => DataTypesObj
 }

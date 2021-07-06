@@ -3,6 +3,7 @@ import { DataTypesObj } from "./interface"
 const DEFAULT_STRING_LENGTH = 255
 const DEFAULT_CHAR_LENGTH = 255
 
+const AUTOINCREMENT = "AUTOINCREMENT"
 const PRIMARY_KEY = "PRIMARY KEY"
 const INDEX = "INDEX"
 const UNIQUE = "UNIQUE"
@@ -28,24 +29,25 @@ const datatypes = (): DataTypesObj => {
    * the insertion order
    */
   const types = new Map<string, string | null>([
-    ["primary", null],
-    ["index", null],
-    ["string", null],
-    ["char", null],
-    ["text", null],
-    ["unsigned", null],
-    ["int", null],
-    ["integer", null],
-    ["tinyInt", null],
-    ["smallInt", null],
-    ["mediumInt", null],
-    ["bigInt", null],
-    ["double", null],
-    ["float", null],
-    ["date", null],
-    ["dateTime", null],
-    ["unique", null],
-    ["default", null]
+    [AUTOINCREMENT, null],
+    [PRIMARY_KEY, null],
+    [INDEX, null],
+    [STRING, null],
+    [CHAR, null],
+    [TEXT, null],
+    [UNSIGNED, null],
+    [INT, null],
+    [INTEGER, null],
+    [TINYINT, null],
+    [SMALLINT, null],
+    [MEDIUMINT, null],
+    [BIGINT, null],
+    [DOUBLE, null],
+    [FLOAT, null],
+    [DATE, null],
+    [DATETIME, null],
+    [UNIQUE, null],
+    [DEFAULT, null]
   ])
 
   return {
@@ -59,76 +61,80 @@ const datatypes = (): DataTypesObj => {
 
       return stmt.join(" ")
     },
+    autoincrement() {
+      types.set(AUTOINCREMENT, AUTOINCREMENT)
+      return this
+    },
     index() {
-      types.set("index", INDEX)
+      types.set(INDEX, INDEX)
       return this
     },
     primary() {
-      types.set("primary", PRIMARY_KEY)
+      types.set(PRIMARY_KEY, PRIMARY_KEY)
       return this
     },
     unique() {
-      types.set("unique", UNIQUE)
+      types.set(UNIQUE, UNIQUE)
       return this
     },
     default(value) {
-      types.set("default", `${DEFAULT} ${value.toString()}`)
+      types.set(DEFAULT, `${DEFAULT} '${value.toString()}'`)
       return this
     },
     string(length = DEFAULT_STRING_LENGTH) {
-      types.set("string", STRING.replace("#", length.toString()))
+      types.set(STRING, STRING.replace("#", length.toString()))
       return this
     },
     char(length = DEFAULT_CHAR_LENGTH) {
-      types.set("char", CHAR.replace("#", length.toString()))
+      types.set(CHAR, CHAR.replace("#", length.toString()))
       return this
     },
     text() {
-      types.set("text", TEXT)
+      types.set(TEXT, TEXT)
       return this
     },
     unsigned() {
-      types.set("unsigned", UNSIGNED)
+      types.set(UNSIGNED, UNSIGNED)
       return this
     },
     int() {
-      types.set("int", INT)
+      types.set(INT, INT)
       return this
     },
     integer() {
-      types.set("integer", INTEGER)
+      types.set(INTEGER, INTEGER)
       return this
     },
     tinyInt() {
-      types.set("tinyInt", TINYINT)
+      types.set(TINYINT, TINYINT)
       return this
     },
     smallInt() {
-      types.set("smallInt", SMALLINT)
+      types.set(SMALLINT, SMALLINT)
       return this
     },
     mediumInt() {
-      types.set("mediumInt", MEDIUMINT)
+      types.set(MEDIUMINT, MEDIUMINT)
       return this
     },
     bigInt() {
-      types.set("bigInt", BIGINT)
+      types.set(BIGINT, BIGINT)
       return this
     },
     double() {
-      types.set("double", DOUBLE)
+      types.set(DOUBLE, DOUBLE)
       return this
     },
     float() {
-      types.set("float", FLOAT)
+      types.set(FLOAT, FLOAT)
       return this
     },
     date() {
-      types.set("date", DATE)
+      types.set(DATE, DATE)
       return this
     },
     dateTime() {
-      types.set("dateTime", DATETIME)
+      types.set(DATETIME, DATETIME)
       return this
     }
   }
