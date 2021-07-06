@@ -9,21 +9,21 @@ const PACKAGES = { modal: true }
 const cliArgs = process.argv.slice(2)
 
 const args = {
-    version: cliArgs[1],
-    package: cliArgs[3]
+  version: cliArgs[1],
+  package: cliArgs[3]
 }
 
 for (const [k, v] of Object.entries(args)) {
-    if (!v) {
-        console.log(chalk.red(`No ${k} specified`))
-        process.exit(1)
-    }
+  if (!v) {
+    console.log(chalk.red(`No ${k} specified`))
+    process.exit(1)
+  }
 }
 
 const { version, package } = args
 if (!PACKAGES[package]) {
-    console.log(chalk.red(`"${package}" package doesn't exist`))
-    process.exit(1)
+  console.log(chalk.red(`"${package}" package doesn't exist`))
+  process.exit(1)
 }
 
 const packageDir = path.join(DIR, `packages/${package}`)
@@ -35,10 +35,10 @@ packageJson.version = version
 writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4))
 
 execSync(
-    `
+  `
+        cd ${packageDir} &&
+        yarn changelog &&
         cd ${DIR} &&
-        yarn changelog --lerna-package ${package} --commit-path ${packageDir} &&
-        mv CHANGELOG.md ${packageDir}/CHANGELOG.md &&
         yarn commit -m "chore(release): ${package}@${version}" &&
         git tag -a '${package}@${version}' -m "" &&
         git push --tags
