@@ -16,6 +16,18 @@ type CreateTableFn<T> = (
 ) => T
 
 /**
+ * @param fields - List of columns to add in a table
+ *
+ * @param createIfNotExists - Create table only if the table doesn't exist
+ *
+ * @returns
+ */
+type CreateVirtualTableFn<T> = (
+  fields: Record<string, DataTypesObj>,
+  createIfNotExists?: boolean
+) => T
+
+/**
  * @param fields - List of columns to fetch. Default is "*"
  */
 type SelectFn<T> = (...fields: string[]) => T
@@ -34,7 +46,7 @@ type DistinctFn<T> = () => T
 type WhereFn<T> = (
   field: string,
   sign: "=" | ">=" | "<=" | "<>" | "like",
-  value: string
+  value: string | number
 ) => T
 
 /**
@@ -70,6 +82,7 @@ type DeleteFn<T> = () => T
 
 export interface QueryBuilder {
   createTable: CreateTableFn<string>
+  // createVirtualTable: CreateVirtualTableFn<string>
   find: FindFn<string>
   select: SelectFn<void>
   distinct: DistinctFn<void>
@@ -77,8 +90,8 @@ export interface QueryBuilder {
   orderBy: OrderByFn<void>
   limit: LimitFn<void>
   count: CountFn<string>
-  insert: InsertFn<string>
-  update: UpdateFn<string>
+  insert: InsertFn<[string, (string | number)[]]>
+  update: UpdateFn<[string, (string | number)[]]>
   delete: DeleteFn<string>
 }
 
@@ -86,6 +99,7 @@ type OrmFunctionReturnType = Promise<Result<SQLResultSet, SQLError>>
 
 export interface OrmFunctions {
   createTable: CreateTableFn<OrmFunctionReturnType>
+  // createVirtualTable: CreateVirtualTableFn<OrmFunctionReturnType>
   find: FindFn<OrmFunctionReturnType>
   select: SelectFn<OrmFunctions>
   distinct: DistinctFn<OrmFunctions>

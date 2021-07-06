@@ -1,5 +1,5 @@
-import { isString } from "../../../util/helpers"
 import { QueryBuilder } from "./interface"
+import { cloneDeep, isString } from "lodash-es"
 
 const CLAUSES = {
   selectClause: "*",
@@ -7,7 +7,7 @@ const CLAUSES = {
   whereClauses: [] as string[],
   orderByClauses: [] as string[],
   offset: 0,
-  limit: 1
+  limit: 0
 }
 
 export default function queryBuilder(tableName: string): QueryBuilder {
@@ -16,7 +16,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
    * limit, select, etc.. so that these values
    * can later be appended into the query.
    */
-  let clauses = Object.assign({}, CLAUSES)
+  let clauses = cloneDeep(CLAUSES)
 
   function appendClause(s: string, addLimit = false) {
     const { whereClauses, orderByClauses, limit, offset } = clauses
@@ -28,7 +28,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     if (orderByClauses.length) {
       stmt += ` ORDER BY ${orderByClauses.join(",")}`
     }
-    if (limit && addLimit) {
+    if (limit > 0 && addLimit) {
       stmt += ` LIMIT ${limit}`
     }
     if (offset) {
@@ -38,13 +38,13 @@ export default function queryBuilder(tableName: string): QueryBuilder {
   }
 
   function reset() {
-    clauses = Object.assign({}, CLAUSES)
+    clauses = cloneDeep(CLAUSES)
   }
 
   return {
     createTable: (fields, createIfNotExists) => {
-      let columns = ""
-      let indexes = ""
+      let columns: string[] = []
+      let indexes: string[] = []
 
       for (const name of Object.keys(fields)) {
         const field = fields[name]
@@ -57,19 +57,23 @@ export default function queryBuilder(tableName: string): QueryBuilder {
          * stmt.
          */
         if (stmt.includes("INDEX")) {
-          indexes += `CREATE INDEX ${
-            createIfNotExists ? "IF NOT EXISTS" : ""
-          } idx_${tableName}_${name} ON ${tableName}(${name});\n`
-          stmt = stmt.replace(/\s?INDEX\s?/, "")
+          indexes.push(
+            `CREATE INDEX ${
+              createIfNotExists ? "IF NOT EXISTS" : ""
+            } idx_${tableName}_${name} ON ${tableName}(${name});`
+          )
+          stmt = stmt.replace(/\s?INDEX\s?/, " ")
         }
 
-        columns += `${stmt}\n`
+        columns.push(stmt)
       }
 
       const stmt = `CREATE TABLE ${
         createIfNotExists ? "IF NOT EXISTS" : ""
-      } ${tableName}(${columns});
-      ${indexes}`
+      } ${tableName}(
+        ${columns.join(",\n")}
+      );
+      ${indexes.join("\n")}`
 
       reset()
 
@@ -88,7 +92,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       clauses.limit = limitCount
     },
     count: () => {
-      const stmt = `SELECT sum([rows]) FROM sys.partitions WHERE object_id=object_id(${tableName}) and index_id in (0,1)`
+      const stmt = `SELECT COUNT(${clauses.selectClause}) FROM ${tableName}`
 
       reset()
 
@@ -97,9 +101,10 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     find: (offsetCount = 0) => {
       clauses.offset = offsetCount
       const stmt = appendClause(
-        `SELECT ${clauses.selectDistinct ? "DISTINCT" : ""} ${
+        `SELECT${clauses.selectDistinct ? "DISTINCT" : ""} ${
           clauses.selectClause
-        } FROM ${tableName}`
+        } FROM ${tableName}`,
+        true
       )
       reset()
       return stmt
@@ -111,29 +116,41 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       let columns = ""
       let values = ""
 
-      for (const k of Object.keys(fields)) {
+      const iter = Object.keys(fields)
+      const valuesArr: (string | number)[] = new Array(iter.length)
+
+      let idx = 0
+      for (const k of iter) {
         const columnName = k as keyof typeof fields
         const value = fields[columnName]
 
         columns += `${columnName},`
-        values += `${value},`
+        values += "?,"
+        valuesArr[idx] = value
+
+        idx++
       }
 
       columns = columns.replace(/,$/, "")
       values = values.replace(/,$/, "")
 
-      const stmt = `INSERT INTO ${tableName} (${columns}) VALUES(${values})`
+      const stmt = `INSERT INTO ${tableName} (${columns}) VALUES (${values})`
 
       reset()
 
-      return stmt
+      return [stmt, valuesArr]
     },
     update: fields => {
       let columnToValuesMapped = ""
+      const iter = Object.keys(fields)
+      const valuesArr: (string | number)[] = new Array(iter.length)
 
-      for (const k of Object.keys(fields)) {
+      let idx = 0
+      for (const k of iter) {
         const columnName = k as keyof typeof fields
         columnToValuesMapped = `${columnName}=?,`
+        valuesArr[idx] = fields[columnName]
+        idx++
       }
 
       columnToValuesMapped = columnToValuesMapped.replace(/,$/, "")
@@ -145,7 +162,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
 
       reset()
 
-      return stmt
+      return [stmt, valuesArr]
     },
     delete: () => {
       const stmt = appendClause(`DELETE FROM ${tableName}`, true)

@@ -8,6 +8,8 @@ import { OrmFunctions } from "./interface"
 import { createResult, Result } from "../../../util/helpers"
 import queryBuilder from "./query_builder"
 
+const dbInstances: Record<string, WebSQLDatabase> = {}
+
 /**
  *
  * @param databaseName - Database to connect to
@@ -15,7 +17,12 @@ import queryBuilder from "./query_builder"
  * @returns
  */
 const useOrm = (databaseName: string, tableName: string): OrmFunctions => {
-  const db = openDatabase(databaseName)
+  let db: WebSQLDatabase = dbInstances[databaseName]
+  if (!db) {
+    db = openDatabase(`${databaseName}.db`)
+    dbInstances[databaseName] = db
+  }
+
   const builder = queryBuilder(tableName)
 
   return {
@@ -52,12 +59,14 @@ const useOrm = (databaseName: string, tableName: string): OrmFunctions => {
       return executeQuery(db, stmt)
     },
     insert: fields => {
-      const stmt = builder.insert(fields)
-      return executeQuery(db, stmt)
+      const [stmt, values] = builder.insert(fields)
+      console.log(stmt, values)
+      return executeQuery(db, stmt, values)
     },
     update: fields => {
-      const stmt = builder.update(fields)
-      return executeQuery(db, stmt)
+      const [stmt, values] = builder.update(fields)
+      console.log(stmt, values)
+      return executeQuery(db, stmt, values)
     },
     delete: () => {
       const stmt = builder.delete()
@@ -72,9 +81,10 @@ const useOrm = (databaseName: string, tableName: string): OrmFunctions => {
  * @param stmt - Query statement
  * @returns
  */
-const executeQuery = (
+const executeQuery = <T extends (string | number)[]>(
   db: WebSQLDatabase,
-  stmt: string
+  stmt: string,
+  values?: T
 ): Promise<Result<SQLResultSet, SQLError>> => {
   const result = createResult<SQLResultSet, SQLError>()
 
@@ -83,7 +93,7 @@ const executeQuery = (
       tx => {
         tx.executeSql(
           stmt,
-          [],
+          values ?? [],
           (_, res) => resolve(result.ok(res)),
           (_, e) => {
             reject(result.error(e))

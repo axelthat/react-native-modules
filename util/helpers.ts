@@ -46,16 +46,16 @@ export const createResult = <S, E>(): Result<S, E> => {
       _error = e
       return this
     },
-    isOk() {
+    isOk: () => {
       return !!_ok
     },
-    isErr() {
+    isErr: () => {
       return !!_error
     },
-    unwrap() {
+    unwrap: () => {
       return _ok
     },
-    unwrapErr() {
+    unwrapErr: () => {
       return _error
     }
   }

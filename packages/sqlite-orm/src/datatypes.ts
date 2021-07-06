@@ -30,7 +30,6 @@ const datatypes = (): DataTypesObj => {
   const types = new Map<string, string | null>([
     ["primary", null],
     ["index", null],
-    ["unique", null],
     ["string", null],
     ["char", null],
     ["text", null],
@@ -45,6 +44,7 @@ const datatypes = (): DataTypesObj => {
     ["float", null],
     ["date", null],
     ["dateTime", null],
+    ["unique", null],
     ["default", null]
   ])
 
