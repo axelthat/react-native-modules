@@ -26,50 +26,48 @@ const useOrm = (databaseName: string, tableName: string): OrmFunctions => {
   const builder = queryBuilder(tableName)
 
   return {
-    createTable: (fields, createIfNotExists = true) => {
-      const stmt = builder.createTable(fields, createIfNotExists)
+    createTable: (...args) => {
+      const stmt = builder.createTable(...args)
       return executeQuery(db, stmt)
     },
     createVirtualTable: (...args) => {
       const stmt = builder.createVirtualTable(...args)
       return executeQuery(db, stmt)
     },
-    find: offset => {
-      const stmt = builder.find(offset)
+    find: (...args) => {
+      const stmt = builder.find(...args)
       return executeQuery(db, stmt)
     },
-    select(...fields) {
-      builder.select(...fields)
+    select(...args) {
+      builder.select(...args)
       return this
     },
     distinct() {
       builder.distinct()
       return this
     },
-    limit(limit) {
-      builder.limit(limit)
+    limit(...args) {
+      builder.limit(...args)
       return this
     },
-    orderBy(field, sortOpt) {
-      builder.orderBy(field, sortOpt)
+    orderBy(...args) {
+      builder.orderBy(...args)
       return this
     },
-    where(field, sign, value) {
-      builder.where(field, sign, value)
+    where(...args) {
+      builder.where(...args)
       return this
     },
     count: () => {
       const stmt = builder.count()
       return executeQuery(db, stmt)
     },
-    insert: fields => {
-      const [stmt, values] = builder.insert(fields)
-      console.log(stmt, values)
+    insert: (...args) => {
+      const [stmt, values] = builder.insert(...args)
       return executeQuery(db, stmt, values)
     },
-    update: fields => {
-      const [stmt, values] = builder.update(fields)
-      console.log(stmt, values)
+    update: (...args) => {
+      const [stmt, values] = builder.update(...args)
       return executeQuery(db, stmt, values)
     },
     delete: () => {
