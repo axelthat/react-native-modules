@@ -1,41 +1,42 @@
 on:
-    push:
-        tags:
-            - "*@*"
+  push:
+    tags:
+      - "*@*"
 
 jobs:
-    release:
-        name: Release
-        runs-on: ubuntu-latest
+  release:
+    name: Release
+    runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout Repo
-              uses: actions/checkout@main
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@main
 
-            - name: Setup Node
-              uses: actions/setup-node@main
-              with:
-                  node-version: 15.x
-                  registry-url: https://registry.npmjs.org/
-                  scope: "@rnmodules"
+      - name: Setup Node
+        uses: actions/setup-node@main
+        with:
+          node-version: 15.x
+          registry-url: https://registry.npmjs.org/
+          scope: "@rnmodules"
 
-            - name: Get package
-              run: |
-                  PACKAGE=$(echo "${GITHUB_REF#refs/*/}" | cut -d \@ -f 1)
-                  echo "WORKING_DIR="./packages/$PACKAGE"" >> $GITHUB_ENV
+      - name: Get package
+        run: |
+          PACKAGE=$(echo "${GITHUB_REF#refs/*/}" | cut -d \@ -f 1)
+          echo "PACKAGE="$PACKAGE"" >> $GITHUB_ENV
+          echo "WORKING_DIR="./packages/$PACKAGE"" >> $GITHUB_ENV
 
-            - name: Release to NPM
-              run: |
-                  yarn
-                  yarn build
-                  cp {package.json,LICENSE,CHANGELOG.md} dist
-                  yarn release
-              working-directory: ${{ env.WORKING_DIR }}
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Release to NPM
+        run: |
+          yarn
+          yarn build
+          cp {package.json,LICENSE,CHANGELOG.md} dist
+          yarn release
+        working-directory: ${{ env.WORKING_DIR }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-            - name: Release to Github
-              uses: ncipollo/release-action@v1
-              with:
-                  bodyFile: ${{ env.WORKING_DIR }}/dist/CHANGELOG.md
-                  token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release to Github
+        uses: ncipollo/release-action@v1
+        with:
+          body: Please refer to [CHANGELOG.md](https://github.com/thestrawhats/react-native-modules/blob/main/packages/${{ env.PACKAGE }}/CHANGELOG.md) for more details.
+          token: ${{ secrets.GITHUB_TOKEN }}
