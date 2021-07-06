@@ -1,3 +1,10 @@
+### [0.1.2](https://github.com/thestrawhats/react-native-modules/compare/sqlite-orm@0.1.1...sqlite-orm@0.1.2) (2021-07-06)
+
+
+### Bug Fixes
+
+* **sqlite-orm:** fix types ([3dd3793](https://github.com/thestrawhats/react-native-modules/commit/3dd3793ddc4f617e202e6d45933508906cb7ea9c))
+
 ### 0.1.1 (2021-07-06)
 
 
