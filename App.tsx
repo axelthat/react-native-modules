@@ -9,12 +9,21 @@ import { openDatabase } from "expo-sqlite"
 const App: React.FC = () => {
   const modalRef = useRef<ModalRef>(null)
 
-  const orm = useOrm("sql", "users")
+  const orm = useOrm("sql", "users_fts")
   const db = openDatabase("sql.db")
 
   useEffect(() => {
+    // orm
+    //   .createVirtualTable(["name"], "users", "id")
+    //   .then(res => {
+    //     console.log(res.unwrap())
+    //   })
+    //   .catch(err => {
+    //     console.log(err.unwrapErr())
+    //   })
     orm
-      .createVirtualTable(["name"], "users", "id")
+      .match("Hello")
+      .find()
       .then(res => {
         console.log(res.unwrap())
       })
@@ -39,7 +48,6 @@ const App: React.FC = () => {
     //     }
     //   )
     // })
-
     // setTimeout(() => {
     //   db.transaction(tmx => {
     //     tmx.executeSql(
@@ -55,13 +63,11 @@ const App: React.FC = () => {
     // }, 500)
     // orm
     //   .createTable({
+    //     id: datatypes().autoincrement().primary(),
     //     name: datatypes().string().index(),
     //     surname: datatypes().string().index(),
     //     age: datatypes().smallInt().unsigned(),
-    //     username: datatypes()
-    //       .unique()
-    //       .string()
-    //       .foreign("customers", "username", ["delete", "cascade"])
+    //     username: datatypes().unique().string()
     //   })
     //   .then(res => {
     //     // orm

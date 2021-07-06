@@ -36,10 +36,15 @@ const useOrm = (databaseName: string, tableName: string): OrmFunctions => {
     },
     find: (...args) => {
       const stmt = builder.find(...args)
+      console.log(stmt)
       return executeQuery(db, stmt)
     },
     select(...args) {
       builder.select(...args)
+      return this
+    },
+    match(...args) {
+      builder.match(...args)
       return this
     },
     distinct() {

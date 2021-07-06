@@ -86,12 +86,18 @@ type UpdateFn<T> = (fields: Record<string, string | number>) => T
  */
 type FindFn<T> = (offset?: number) => T
 
+/**
+ * @param keyword - Search keyword
+ */
+type MatchFn<T> = (keyword: string) => T
+
 type DeleteFn<T> = () => T
 
 export interface QueryBuilder {
   createTable: CreateTableFn<string>
   createVirtualTable: CreateVirtualTableFn<string>
   find: FindFn<string>
+  match: MatchFn<void>
   select: SelectFn<void>
   distinct: DistinctFn<void>
   where: WhereFn<void>
@@ -110,6 +116,7 @@ export interface OrmFunctions {
   createVirtualTable: CreateVirtualTableFn<OrmFunctionReturnType>
   find: FindFn<OrmFunctionReturnType>
   select: SelectFn<OrmFunctions>
+  match: MatchFn<OrmFunctions>
   distinct: DistinctFn<OrmFunctions>
   where: WhereFn<OrmFunctions>
   orderBy: OrderByFn<OrmFunctions>

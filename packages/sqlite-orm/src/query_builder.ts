@@ -6,6 +6,7 @@ const CLAUSES = {
   selectDistinct: false,
   whereClauses: [] as string[],
   orderByClauses: [] as string[],
+  match: "",
   offset: 0,
   limit: 0
 }
@@ -19,11 +20,14 @@ export default function queryBuilder(tableName: string): QueryBuilder {
   let clauses = cloneDeep(CLAUSES)
 
   function appendClause(s: string, addLimit = false) {
-    const { whereClauses, orderByClauses, limit, offset } = clauses
+    const { whereClauses, orderByClauses, limit, offset, match } = clauses
 
     let stmt = s
     if (whereClauses.length) {
       stmt += ` WHERE ${whereClauses.join(" AND ")}`
+    }
+    if (match) {
+      stmt += ` MATCH ${match}`
     }
     if (orderByClauses.length) {
       stmt += ` ORDER BY ${orderByClauses.join(",")}`
@@ -111,6 +115,10 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       reset()
 
       return stmt
+    },
+    match: keyword => {
+      clauses.match = `'${keyword}'`
+      clauses.whereClauses.push(`${tableName}`)
     },
     select: (...fields) => {
       clauses.selectClause = fields.join(",")

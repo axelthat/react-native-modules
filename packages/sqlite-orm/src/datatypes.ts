@@ -3,7 +3,7 @@ import { DataTypesObj } from "./interface"
 const DEFAULT_STRING_LENGTH = 255
 const DEFAULT_CHAR_LENGTH = 255
 
-const AUTOINCREMENT = "AUTOINCREMENT"
+const AUTO_INCREMENT = "AUTO_INCREMENT"
 const PRIMARY_KEY = "PRIMARY KEY"
 const INDEX = "INDEX"
 const UNIQUE = "UNIQUE"
@@ -30,7 +30,7 @@ const datatypes = (): DataTypesObj => {
    * the insertion order
    */
   const types = new Map<string, string | null>([
-    [AUTOINCREMENT, null],
+    [AUTO_INCREMENT, null],
     [PRIMARY_KEY, null],
     [INDEX, null],
     [STRING, null],
@@ -64,7 +64,7 @@ const datatypes = (): DataTypesObj => {
       return stmt.join(" ")
     },
     autoincrement() {
-      types.set(AUTOINCREMENT, AUTOINCREMENT)
+      types.set(AUTO_INCREMENT, AUTO_INCREMENT)
       return this
     },
     index() {
