@@ -14,6 +14,7 @@ import React, {
 } from "react"
 import {
   Dimensions,
+  FlatList,
   FlatListProps,
   ListRenderItem,
   NativeScrollEvent,
@@ -27,7 +28,7 @@ import {
   ViewStyle
 } from "react-native"
 import {
-  FlatList,
+  // FlatList,
   NativeViewGestureHandler,
   PanGestureHandler,
   ScrollView
@@ -152,6 +153,7 @@ const ModalView = <T extends unknown>(
   const scrollYOffset = useSharedValue(0)
   const panRef = useRef<PanGestureHandler>()
   const scrollRef = useRef<ScrollView>()
+  const flatListRef = useRef<FlatList>()
 
   const opacity = useSharedValue(0)
   const animateOpacity = useAnimatedStyle(() => {
@@ -177,7 +179,11 @@ const ModalView = <T extends unknown>(
      * duration. Hence, setting the animated
      * to false.
      */
-    scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false })
+    if (flatListRef.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: false })
+    } else if (scrollRef.current) {
+      scrollRef.current.scrollTo({ x: 0, y: 0, animated: false })
+    }
   }
 
   const swipe = useAnimatedGestureHandler({
@@ -324,23 +330,19 @@ const ModalView = <T extends unknown>(
   const renderContent = () => {
     if (flatList) {
       /**
-       * Currently react-native-gesture-handler
-       * doesn't provide simultaneousHandlers prop
-       * like the scroll view. Hence when scroll y
-       * is at 0 you still can't drag the modal
-       * to close.
-       *
-       * https://github.com/software-mansion/react-native-gesture-handler/issues/1494
+       * https://github.com/software-mansion/react-native-gesture-handler/issues/492
        */
       return (
-        <FlatList
-          // @ts-ignore
-          ref={scrollRef}
-          {...flatList}
-          onScrollBeginDrag={setScrollOffset}
-          onScrollEndDrag={setScrollOffset}
-          testID="flatList"
-        />
+        <NativeViewGestureHandler ref={scrollRef} simultaneousHandlers={panRef}>
+          <FlatList
+            // @ts-ignore
+            ref={flatListRef}
+            {...flatList}
+            onScrollBeginDrag={setScrollOffset}
+            onScrollEndDrag={setScrollOffset}
+            testID="flatList"
+          />
+        </NativeViewGestureHandler>
       )
     }
 

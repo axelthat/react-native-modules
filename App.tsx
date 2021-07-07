@@ -152,7 +152,7 @@ const App: React.FC = () => {
         fullPage={false}
         scrollView={true}
         flatList={{
-          data: [1, 2, 3],
+          data: Array.from(new Array(100), (_, i) => i),
           renderItem: ({ item }) => <Text>{item}</Text>,
           keyExtractor: item => item.toString()
         }}>
