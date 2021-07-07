@@ -1,3 +1,11 @@
+### [0.1.28](https://github.com///compare/sqlite-orm@0.1.27...sqlite-orm@0.1.28) (2021-07-07)
+
+
+### Bug Fixes
+
+* **sqlite-orm:** add CURRENT_TIMESTAMP default in datetime ([fad7262](https://github.com///commit/fad72625d3b187054549529cd13ca99af1c1855e))
+* **sqlite-orm:** fix auto increment issues ([e3206b2](https://github.com///commit/e3206b2af9ca759b296177e0be20a63fbcda2761))
+
 ### [0.1.27](https://github.com///compare/sqlite-orm@0.1.27...sqlite-orm@0.1.27) (2021-07-07)
 
 
