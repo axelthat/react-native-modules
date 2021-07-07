@@ -203,9 +203,9 @@ const ModalView = <T extends unknown>(
     onActive: (e, ctx) => {
       /**
        * If scrolling stop drag related
-       * functions
+       * functions.
        */
-      if (scrollYOffset.value > 0) {
+      if (scrollYOffset.value > 1) {
         ctx.cancel = true
         return
       }
