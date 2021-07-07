@@ -80,7 +80,8 @@ export const datatypes = (): DataTypesObj => {
       return this
     },
     default(value) {
-      types.set(DEFAULT, `${DEFAULT} '${value.toString()}'`)
+      const v = value === "CURRENT_TIMESTAMP" ? value : `'${value.toString()}'`
+      types.set(DEFAULT, `${DEFAULT} ${v}`)
       return this
     },
     string(length = DEFAULT_STRING_LENGTH) {
