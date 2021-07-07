@@ -32,7 +32,7 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf8"))
 
 packageJson.version = version
 
-writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4))
+writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2))
 
 execSync(
   `
