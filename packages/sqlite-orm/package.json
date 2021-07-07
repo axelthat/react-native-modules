@@ -4,6 +4,8 @@
   "repository": "https://github.com/thestrawhats/react-native-modules/blob/main/packages/sqlite-orm",
   "author": "Axel",
   "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc --project ./tsconfig.prod.json",
     "release": "npm publish --access public --no-git-checks",
