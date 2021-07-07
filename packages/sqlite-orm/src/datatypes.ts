@@ -38,7 +38,6 @@ export const datatypes = (): DataTypesObj => {
     [UNSIGNED, null],
     [INT, null],
     [INTEGER, null],
-    [PRIMARY_KEY, null],
     [AUTO_INCREMENT, null],
     [TINYINT, null],
     [SMALLINT, null],
@@ -49,6 +48,7 @@ export const datatypes = (): DataTypesObj => {
     [DATE, null],
     [DATETIME, null],
     [UNIQUE, null],
+    [PRIMARY_KEY, null],
     [NOT_NULL, NOT_NULL],
     [DEFAULT, null],
     [FOREIGN_KEY, null]
