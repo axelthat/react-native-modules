@@ -3,7 +3,7 @@ import { DataTypesObj } from "./interface"
 const DEFAULT_STRING_LENGTH = 255
 const DEFAULT_CHAR_LENGTH = 255
 
-const AUTO_INCREMENT = "AUTO_INCREMENT"
+const AUTO_INCREMENT = "AUTOINCREMENT"
 const PRIMARY_KEY = "PRIMARY KEY"
 const INDEX = "INDEX"
 const UNIQUE = "UNIQUE"
@@ -23,6 +23,7 @@ const DATE = "DATE"
 const DATETIME = "DATETIME"
 const DEFAULT = "DEFAULT"
 const FOREIGN_KEY = "FOREIGN_KEY"
+const NOT_NULL = "NOT NULL"
 
 export const datatypes = (): DataTypesObj => {
   /**
@@ -30,8 +31,6 @@ export const datatypes = (): DataTypesObj => {
    * the insertion order
    */
   const types = new Map<string, string | null>([
-    [AUTO_INCREMENT, null],
-    [PRIMARY_KEY, null],
     [INDEX, null],
     [STRING, null],
     [CHAR, null],
@@ -39,6 +38,8 @@ export const datatypes = (): DataTypesObj => {
     [UNSIGNED, null],
     [INT, null],
     [INTEGER, null],
+    [PRIMARY_KEY, null],
+    [AUTO_INCREMENT, null],
     [TINYINT, null],
     [SMALLINT, null],
     [MEDIUMINT, null],
@@ -48,6 +49,7 @@ export const datatypes = (): DataTypesObj => {
     [DATE, null],
     [DATETIME, null],
     [UNIQUE, null],
+    [NOT_NULL, NOT_NULL],
     [DEFAULT, null],
     [FOREIGN_KEY, null]
   ])
@@ -138,6 +140,10 @@ export const datatypes = (): DataTypesObj => {
     },
     dateTime() {
       types.set(DATETIME, DATETIME)
+      return this
+    },
+    nullable() {
+      types.set(NOT_NULL, null)
       return this
     },
     foreign(table, field, on = ["delete", "no action"]) {

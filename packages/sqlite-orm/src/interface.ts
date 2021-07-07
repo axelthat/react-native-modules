@@ -154,6 +154,7 @@ export interface DataTypesObj {
   text: () => DataTypesObj
   date: () => DataTypesObj
   dateTime: () => DataTypesObj
+  nullable: () => DataTypesObj
   default: (value: string | number) => DataTypesObj
   index: () => DataTypesObj
   foreign: (

@@ -96,6 +96,8 @@ export default function queryBuilder(tableName: string): QueryBuilder {
 
       reset()
 
+      console.log(stmt)
+
       return stmt
     },
     createVirtualTable: (
