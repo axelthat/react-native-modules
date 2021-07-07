@@ -30,29 +30,7 @@ export const datatypes = (): DataTypesObj => {
    * Using map because it remembers
    * the insertion order
    */
-  const types = new Map<string, string | null>([
-    [INDEX, null],
-    [STRING, null],
-    [CHAR, null],
-    [TEXT, null],
-    [UNSIGNED, null],
-    [INT, null],
-    [INTEGER, null],
-    [AUTO_INCREMENT, null],
-    [TINYINT, null],
-    [SMALLINT, null],
-    [MEDIUMINT, null],
-    [BIGINT, null],
-    [DOUBLE, null],
-    [FLOAT, null],
-    [DATE, null],
-    [DATETIME, null],
-    [UNIQUE, null],
-    [PRIMARY_KEY, null],
-    [NOT_NULL, NOT_NULL],
-    [DEFAULT, null],
-    [FOREIGN_KEY, null]
-  ])
+  const types = new Map<string, string | null>()
 
   return {
     build: () => {
