@@ -1,3 +1,10 @@
+### [0.1.25](https://github.com///compare/modal@0.1.2...modal@0.1.25) (2021-07-07)
+
+
+### Bug Fixes
+
+* **modal:** check scroll y offset is more than 1 instead of 0 as scrolling to top in android sometimes results in value being between 0 and 1 ([87ab17d](https://github.com///commit/87ab17d215d007b6a1e52ed6ef72d242c2460a00))
+
 ### [0.1.2](https://github.com/thestrawhats/react-native-modules/compare/modal@0.1.1...modal@0.1.2) (2021-07-07)
 
 
