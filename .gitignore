@@ -59,3 +59,4 @@ buck-out/
 /ios/Pods/
 
 t.txt
+App.tsx
