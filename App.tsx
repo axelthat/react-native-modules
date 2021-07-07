@@ -17,20 +17,20 @@ const App: React.FC = () => {
   const db = openDatabase("sql.db")
 
   useEffect(() => {
-    orm
-      .find()
-      .then(res => {
-        // const rows: any = res.unwrap()?.rows
-        // for (const row of rows) {
-        //   console.log(row)
-        // }
-        const data: User[] | undefined = res.unwrap()?.data
-        console.log(data)
-        // console.log(res.unwrap()?.rows)
-      })
-      .catch(err => {
-        console.log(err.unwrapErr())
-      })
+    // orm
+    //   .find()
+    //   .then(res => {
+    //     // const rows: any = res.unwrap()?.rows
+    //     // for (const row of rows) {
+    //     //   console.log(row)
+    //     // }
+    //     const data: User[] | undefined = res.unwrap()?.data
+    //     console.log(data)
+    //     // console.log(res.unwrap()?.rows)
+    //   })
+    //   .catch(err => {
+    //     console.log(err.unwrapErr())
+    //   })
     // orm
     //   .insert({
     //     name: "Hello World",
@@ -140,17 +140,28 @@ const App: React.FC = () => {
     //   .catch(e => {
     //     console.log(e.unwrapErr())
     //   })
+    modalRef.current?.show()
   }, [])
 
-  return <View></View>
+  // return <View></View>
 
-  // return (
-  //     <Modal ref={modalRef} fullPage={false} scrollView={true}>
-  //         {Array.from(new Array(100), (_, i) => (
-  //             <Text key={i.toString()}>{i.toString()}</Text>
-  //         ))}
-  //     </Modal>
-  // )
+  return (
+    <View style={{ flex: 1, backgroundColor: "white" }}>
+      <Modal
+        ref={modalRef}
+        fullPage={false}
+        scrollView={true}
+        flatList={{
+          data: [1, 2, 3],
+          renderItem: ({ item }) => <Text>{item}</Text>,
+          keyExtractor: item => item.toString()
+        }}>
+        {/* {Array.from(new Array(100), (_, i) => (
+        <Text key={i.toString()}>{i.toString()}</Text>
+      ))} */}
+      </Modal>
+    </View>
+  )
 }
 
 export default App
