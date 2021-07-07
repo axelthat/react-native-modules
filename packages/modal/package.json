@@ -1,17 +1,20 @@
 {
-    "name": "@rnmodules/modal",
-    "version": "0.1.2",
-    "scripts": {
-        "build": "tsc --project ./tsconfig.prod.json",
-        "release": "npm publish --access public --no-git-checks",
-        "changelog": "conventional-changelog -n ../../changelog.config.js -p angular -i CHANGELOG.md -s --lerna-package modal --commit-path ."
-    },
-    "peerDependencies": {
-        "react": "17.0.2",
-        "react-native": "0.64.2",
-        "react-native-gesture-handler": "^1.10.3",
-        "react-native-reanimated": "^2.2.0",
-        "react-native-unimodules": "^0.14.3"
-    },
-    "dependencies": {}
+  "name": "@rnmodules/modal",
+  "version": "0.1.2",
+  "repository": "https://github.com/thestrawhats/react-native-modules/blob/main/packages/modal",
+  "author": "Axel",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.prod.json",
+    "release": "npm publish --access public --no-git-checks",
+    "changelog": "conventional-changelog -n ../../changelog.config.js -p angular -i CHANGELOG.md -s --lerna-package modal --commit-path ."
+  },
+  "peerDependencies": {
+    "react": "17.0.2",
+    "react-native": "0.64.2",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-reanimated": "^2.2.0",
+    "react-native-unimodules": "^0.14.3"
+  },
+  "dependencies": {}
 }
