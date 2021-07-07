@@ -1,3 +1,5 @@
+### [0.1.26](https://github.com///compare/modal@0.1.25...modal@0.1.26) (2021-07-07)
+
 ### [0.1.25](https://github.com///compare/modal@0.1.2...modal@0.1.25) (2021-07-07)
 
 
