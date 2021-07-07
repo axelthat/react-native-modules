@@ -1,3 +1,5 @@
+### [0.1.27](https://github.com///compare/sqlite-orm@0.1.26...sqlite-orm@0.1.27) (2021-07-07)
+
 ### [0.1.26](https://github.com///compare/sqlite-orm@0.1.2...sqlite-orm@0.1.26) (2021-07-07)
 
 ### [0.1.2](https://github.com/thestrawhats/react-native-modules/compare/sqlite-orm@0.1.1...sqlite-orm@0.1.2) (2021-07-06)

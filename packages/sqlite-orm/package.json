@@ -1,6 +1,6 @@
 {
   "name": "@rnmodules/sqlite-orm",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "repository": "https://github.com/thestrawhats/react-native-modules/blob/main/packages/sqlite-orm",
   "author": "Axel",
   "license": "MIT",
