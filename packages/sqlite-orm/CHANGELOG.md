@@ -1,3 +1,10 @@
+### [0.1.29](https://github.com///compare/sqlite-orm@0.1.28...sqlite-orm@0.1.29) (2021-07-07)
+
+
+### Bug Fixes
+
+* **sqlite-orm:** remove defaults in datatypes ([1c34da2](https://github.com///commit/1c34da20ad2a9f06ee94b1be2d42343496d03497))
+
 ### [0.1.28](https://github.com///compare/sqlite-orm@0.1.27...sqlite-orm@0.1.28) (2021-07-07)
 
 
