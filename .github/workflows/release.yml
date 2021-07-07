@@ -30,7 +30,7 @@ jobs:
           yarn
           yarn build
           cp {package.json,LICENSE,CHANGELOG.md} dist
-          yarn release
+          cd dist && yarn release
         working-directory: ${{ env.WORKING_DIR }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
