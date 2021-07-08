@@ -83,7 +83,7 @@ type MatchFn<T> = (keyword: string) => T
 type DeleteFn<T> = () => T
 
 export interface QueryBuilder {
-  createTable: CreateTableFn<[string, string, string[] | undefined]>
+  createTable: CreateTableFn<[string, string | undefined, string[] | undefined]>
   find: FindFn<string>
   select: SelectFn<void>
   distinct: DistinctFn<void>

@@ -11,25 +11,6 @@ const CLAUSES = {
   limit: 0
 }
 
-function appendClause(clauses: typeof CLAUSES, s: string, addLimit = false) {
-  const { whereClauses, orderByClauses, limit, offset } = clauses
-
-  let stmt = s
-  if (whereClauses.length) {
-    stmt += ` WHERE ${whereClauses.join(" AND ")}`
-  }
-  if (orderByClauses.length) {
-    stmt += ` ORDER BY ${orderByClauses.join(",")}`
-  }
-  if (limit > 0 && addLimit) {
-    stmt += ` LIMIT ${limit}`
-  }
-  if (offset) {
-    stmt += ` OFFSET ${offset}`
-  }
-  return stmt.trim()
-}
-
 export default function queryBuilder(tableName: string): QueryBuilder {
   /**
    * Holds statements like where, order by,
@@ -37,6 +18,32 @@ export default function queryBuilder(tableName: string): QueryBuilder {
    * can later be appended into the query.
    */
   let clauses = cloneDeep(CLAUSES)
+
+  function appendClause(s: string, addLimit = false) {
+    const { whereClauses, orderByClauses, limit, offset } = clauses
+
+    let stmt = s
+    if (whereClauses.length) {
+      stmt += ` WHERE ${whereClauses.join(" AND ")}`
+    } else {
+      if (clauses.isSearch) {
+        stmt += ` WHERE _${tableName}_fts`
+      }
+    }
+
+    if (orderByClauses.length) {
+      stmt += ` ORDER BY ${orderByClauses.join(",")}`
+    }
+
+    if (limit > 0 && addLimit) {
+      stmt += ` LIMIT ${limit}`
+    }
+
+    if (offset) {
+      stmt += ` OFFSET ${offset}`
+    }
+    return stmt.trim()
+  }
 
   function reset() {
     clauses = cloneDeep(CLAUSES)
@@ -96,7 +103,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
           content_rowid='${primaryKey}'
         );
       `
-        : ""
+        : undefined
 
       /**
        * Different variants of indexes
@@ -194,7 +201,6 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     find: (offsetCount = 0) => {
       clauses.offset = offsetCount
       const stmt = appendClause(
-        clauses,
         `SELECT${clauses.selectDistinct ? "DISTINCT" : ""} ${
           clauses.selectClause
         } FROM ${clauses.isSearch ? `_${tableName}_fts` : tableName}`,
@@ -250,7 +256,6 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       columnToValuesMapped = columnToValuesMapped.replace(/,$/, "")
 
       const stmt = appendClause(
-        clauses,
         `UPDATE ${tableName} SET ${columnToValuesMapped}`,
         true
       )
@@ -260,7 +265,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       return [stmt, valuesArr]
     },
     delete: () => {
-      const stmt = appendClause(clauses, `DELETE FROM ${tableName}`, true)
+      const stmt = appendClause(`DELETE FROM ${tableName}`, true)
 
       reset()
 
