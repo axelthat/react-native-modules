@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "removeComments": true,
+    "skipLibCheck": true,
+    "outDir": "./dist/lib",
+    "declaration": true,
+    "noEmit": false
+  },
+  "include": ["src"],
+  "exclude": ["./src/__tests__"]
+}
