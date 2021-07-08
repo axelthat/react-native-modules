@@ -28,6 +28,7 @@ jobs:
       - name: Release to NPM
         run: |
           yarn
+          yarn test
           yarn build
           cp {package.json,LICENSE,CHANGELOG.md} dist
           cd dist && yarn release
