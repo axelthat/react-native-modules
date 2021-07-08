@@ -1,3 +1,15 @@
+### [0.1.3](https://github.com///compare/sqlite-orm@0.1.29...sqlite-orm@0.1.3) (2021-07-08)
+
+
+### Features
+
+* **sqlite-orm:** add auto index ([9760d17](https://github.com///commit/9760d177e76412b3ca09dc971dd9772d8d52b6af))
+
+
+### Code Refactoring
+
+* **sqlite-orm:** define offsetting as a separate function ([2373636](https://github.com///commit/2373636ff701abe2b66b3c61d0dee185d47fe7cc))
+
 ### [0.1.29](https://github.com///compare/sqlite-orm@0.1.28...sqlite-orm@0.1.29) (2021-07-07)
 
 
