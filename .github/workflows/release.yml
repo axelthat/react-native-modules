@@ -26,7 +26,7 @@ jobs:
           echo "WORKING_DIR="./packages/$PACKAGE"" >> $GITHUB_ENV
 
       - name: Test
-        run: yarn test
+        run: yarn && yarn test
 
       - name: Release to NPM
         run: |
