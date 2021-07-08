@@ -6,9 +6,28 @@ const CLAUSES = {
   selectDistinct: false,
   whereClauses: [] as string[],
   orderByClauses: [] as string[],
-  match: "",
+  isSearch: false,
   offset: 0,
   limit: 0
+}
+
+function appendClause(clauses: typeof CLAUSES, s: string, addLimit = false) {
+  const { whereClauses, orderByClauses, limit, offset } = clauses
+
+  let stmt = s
+  if (whereClauses.length) {
+    stmt += ` WHERE ${whereClauses.join(" AND ")}`
+  }
+  if (orderByClauses.length) {
+    stmt += ` ORDER BY ${orderByClauses.join(",")}`
+  }
+  if (limit > 0 && addLimit) {
+    stmt += ` LIMIT ${limit}`
+  }
+  if (offset) {
+    stmt += ` OFFSET ${offset}`
+  }
+  return stmt.trim()
 }
 
 export default function queryBuilder(tableName: string): QueryBuilder {
@@ -19,28 +38,6 @@ export default function queryBuilder(tableName: string): QueryBuilder {
    */
   let clauses = cloneDeep(CLAUSES)
 
-  function appendClause(s: string, addLimit = false) {
-    const { whereClauses, orderByClauses, limit, offset, match } = clauses
-
-    let stmt = s
-    if (whereClauses.length) {
-      stmt += ` WHERE ${whereClauses.join(" AND ")}`
-    }
-    if (match) {
-      stmt += ` MATCH ${match}`
-    }
-    if (orderByClauses.length) {
-      stmt += ` ORDER BY ${orderByClauses.join(",")}`
-    }
-    if (limit > 0 && addLimit) {
-      stmt += ` LIMIT ${limit}`
-    }
-    if (offset) {
-      stmt += ` OFFSET ${offset}`
-    }
-    return stmt.trim()
-  }
-
   function reset() {
     clauses = cloneDeep(CLAUSES)
   }
@@ -50,10 +47,16 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       let columns: string[] = []
       let indexes: string[] = []
       let foreignKeys: string[] = []
+      let primaryKey = ""
 
       for (const name of Object.keys(fields)) {
         const field = fields[name]
         let stmt = `${name} ${isString(field) ? field : field.build()}`
+
+        if (stmt.includes("PRIMARY KEY")) {
+          primaryKey = name
+        }
+
         /**
          * Check if stmt includes INDEX
          * and if so create a new query
@@ -62,11 +65,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
          * stmt.
          */
         if (stmt.includes("INDEX")) {
-          indexes.push(
-            `CREATE INDEX ${
-              createIfNotExists ? "IF NOT EXISTS" : ""
-            } idx_${tableName}_${name} ON ${tableName}(${name});`
-          )
+          indexes.push(name)
           stmt = stmt.replace(/\s?INDEX\s?/, " ")
         }
 
@@ -74,7 +73,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
           const regex = /FOREIGN_KEY:(.*?):/
           const st = stmt.match(regex)
           if (st && st[1]) {
-            const [t, f, a, at] = JSON.parse(st && st[1])
+            const [t, f, a, at] = JSON.parse(st[1])
             foreignKeys.push(
               `FOREIGN KEY (${name}) REFERENCES ${t} (${f}) ON ${a.toUpperCase()} ${at.toUpperCase()}`
             )
@@ -85,6 +84,67 @@ export default function queryBuilder(tableName: string): QueryBuilder {
         columns.push(stmt)
       }
 
+      const searchTableName = `_${tableName}_fts`
+
+      const searchStmt = indexes.length
+        ? `
+        CREATE VIRTUAL TABLE ${
+          createIfNotExists ? "IF NOT EXISTS" : ""
+        } ${searchTableName} USING fts5(
+          ${indexes.join(",\n")},
+          content='${tableName}',
+          content_rowid='${primaryKey}'
+        );
+      `
+        : ""
+
+      /**
+       * Different variants of indexes
+       * as string used in query statements
+       */
+      const indexesStr = {
+        comma: "",
+        commaNewLine: "",
+        newDotComma: "",
+        oldDotComma: ""
+      }
+
+      const indexesLength = indexes.length
+      for (let i = 0; i < indexesLength; i++) {
+        const index = indexes[i]
+        const isLastIdx = i === indexesLength - 1
+
+        indexesStr.comma += `${index}${!isLastIdx ? "," : ""}`
+        indexesStr.commaNewLine += `${index}${!isLastIdx ? ",\n" : ""}`
+        indexesStr.newDotComma += `new.${index}${!isLastIdx ? "," : ""}`
+        indexesStr.oldDotComma += `old.${index}${!isLastIdx ? "," : ""}`
+      }
+
+      const triggers = searchStmt
+        ? [
+            `CREATE TRIGGER _trigger_${tableName}_insert AFTER INSERT ON ${tableName}
+          BEGIN
+            INSERT INTO ${searchTableName} (rowid, ${indexesStr.comma})
+            VALUES (new.id, ${indexesStr.newDotComma});
+          END;`,
+
+            `CREATE TRIGGER _trigger_${tableName}_delete AFTER DELETE ON ${tableName}
+          BEGIN
+            INSERT INTO ${searchTableName} (${searchTableName}, rowid, ${indexesStr.comma})
+            VALUES ('delete', old.id, ${indexesStr.oldDotComma});
+          END;`,
+
+            `CREATE TRIGGER _trigger_${tableName}_update AFTER UPDATE ON ${tableName}
+          BEGIN
+            INSERT INTO ${searchTableName} (${searchTableName}, rowid, ${indexesStr.comma})
+            VALUES ('delete', old.id, ${indexesStr.oldDotComma});
+
+            INSERT INTO ${searchTableName} (rowid, ${indexesStr.comma})
+            VALUES (new.id, ${indexesStr.newDotComma});
+          END;`
+          ]
+        : undefined
+
       const stmt = `CREATE TABLE ${
         createIfNotExists ? "IF NOT EXISTS" : ""
       } ${tableName}(
@@ -92,41 +152,31 @@ export default function queryBuilder(tableName: string): QueryBuilder {
 
         ${foreignKeys.join(",\n")}
       );
-      ${indexes.join("\n")}`
+      ${indexes
+        .map(
+          name =>
+            `CREATE INDEX ${
+              createIfNotExists ? "IF NOT EXISTS" : ""
+            } idx_${tableName}_${name} ON ${tableName}(${name});`
+        )
+        .join("\n")}`
 
       reset()
 
-      console.log(stmt)
-
-      return stmt
-    },
-    createVirtualTable: (
-      fields,
-      table,
-      primaryKey,
-      createIfNotExists = true
-    ) => {
-      const stmt = `CREATE VIRTUAL TABLE ${
-        createIfNotExists ? "IF NOT EXISTS" : ""
-      } ${tableName} USING fts5(
-        ${fields.join(",\n")},
-        content='${table}', 
-        content_rowid='${primaryKey}' 
-      );`
-
-      reset()
-
-      return stmt
-    },
-    match: keyword => {
-      clauses.match = `'${keyword}'`
-      clauses.whereClauses.push(`${tableName}`)
+      return [stmt, searchStmt, triggers]
     },
     select: (...fields) => {
       clauses.selectClause = fields.join(",")
     },
     where: (field, sign, compareWith) => {
-      clauses.whereClauses.push(`${field}${sign}'${compareWith}'`)
+      clauses.whereClauses.push(
+        `${field}${sign ?? ""}${compareWith ? `'${compareWith}'` : ""}`
+      )
+    },
+    whereMatch: (field, keyword) => {
+      clauses.whereClauses.push(`${field} MATCH '${keyword}'`)
+      clauses.selectClause = "rowid as id, *"
+      clauses.isSearch = true
     },
     orderBy: (field, sortOpt) => {
       clauses.orderByClauses.push(`${field} ${sortOpt}`)
@@ -144,9 +194,10 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     find: (offsetCount = 0) => {
       clauses.offset = offsetCount
       const stmt = appendClause(
+        clauses,
         `SELECT${clauses.selectDistinct ? "DISTINCT" : ""} ${
           clauses.selectClause
-        } FROM ${tableName}`,
+        } FROM ${clauses.isSearch ? `_${tableName}_fts` : tableName}`,
         true
       )
       reset()
@@ -199,6 +250,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       columnToValuesMapped = columnToValuesMapped.replace(/,$/, "")
 
       const stmt = appendClause(
+        clauses,
         `UPDATE ${tableName} SET ${columnToValuesMapped}`,
         true
       )
@@ -208,7 +260,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
       return [stmt, valuesArr]
     },
     delete: () => {
-      const stmt = appendClause(`DELETE FROM ${tableName}`, true)
+      const stmt = appendClause(clauses, `DELETE FROM ${tableName}`, true)
 
       reset()
 

@@ -29,13 +29,18 @@ export const useOrm = (
   const builder = queryBuilder(tableName)
 
   return {
-    createTable: (...args) => {
-      const stmt = builder.createTable(...args)
-      return executeQuery(db, stmt)
-    },
-    createVirtualTable: (...args) => {
-      const stmt = builder.createVirtualTable(...args)
-      return executeQuery(db, stmt)
+    createTable: async (...args) => {
+      const [stmt, searchStmt, triggers] = builder.createTable(...args)
+      let res = await executeQuery(db, stmt)
+      if (searchStmt) {
+        res = await executeQuery(db, searchStmt)
+        if (triggers) {
+          for (const trigger of triggers) {
+            await executeQuery(db, trigger)
+          }
+        }
+      }
+      return res
     },
     find: (...args) => {
       const stmt = builder.find(...args)
@@ -45,8 +50,8 @@ export const useOrm = (
       builder.select(...args)
       return this
     },
-    match(...args) {
-      builder.match(...args)
+    whereMatch(...args) {
+      builder.whereMatch(...args)
       return this
     },
     distinct() {

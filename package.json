@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "expo-sqlite": "^9.2.1",
+    "faker": "^5.5.3",
     "react": "17.0.2",
     "react-native": "0.64.2",
     "react-native-gesture-handler": "^1.10.3",
@@ -33,6 +34,7 @@
     "@babel/runtime": "^7.14.6",
     "@react-native-community/eslint-config": "^3.0.0",
     "@testing-library/react-native": "^7.2.0",
+    "@types/faker": "^5.5.7",
     "@types/jest": "^26.0.23",
     "@types/react-native": "^0.64.10",
     "@types/react-test-renderer": "^17.0.1",

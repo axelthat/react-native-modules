@@ -18,26 +18,6 @@ type CreateTableFn<T> = (
 ) => T
 
 /**
- * @param indexable - List of indexable fields
- *
- * @param table - Main table where the data should
- * be indexed from
- *
- * @param primaryKey - Main table's column name which uniquely
- * identifies the data. Most probably the primary key of the table.
- *
- * @param createIfNotExists - Create table only if the table doesn't exist
- *
- * @returns
- */
-type CreateVirtualTableFn<T> = (
-  indexables: string[],
-  table: string,
-  primaryKey: string,
-  createIfNotExists?: boolean
-) => T
-
-/**
  * @param fields - List of columns to fetch. Default is "*"
  */
 type SelectFn<T> = (...fields: string[]) => T
@@ -55,9 +35,16 @@ type DistinctFn<T> = () => T
  */
 type WhereFn<T> = (
   field: string,
-  sign: "=" | ">=" | "<=" | "<>" | "like",
-  value: string | number
+  sign?: "=" | ">=" | "<=" | "<>" | "like",
+  value?: string | number
 ) => T
+
+/**
+ * @param field - Field to search for
+ *
+ * @param match - Search keyword
+ */
+type WhereMatchFn<T> = (field: string, match?: string) => T
 
 /**
  * @param field - Field to sort
@@ -96,13 +83,12 @@ type MatchFn<T> = (keyword: string) => T
 type DeleteFn<T> = () => T
 
 export interface QueryBuilder {
-  createTable: CreateTableFn<string>
-  createVirtualTable: CreateVirtualTableFn<string>
+  createTable: CreateTableFn<[string, string, string[] | undefined]>
   find: FindFn<string>
-  match: MatchFn<void>
   select: SelectFn<void>
   distinct: DistinctFn<void>
   where: WhereFn<void>
+  whereMatch: WhereMatchFn<void>
   orderBy: OrderByFn<void>
   limit: LimitFn<void>
   count: CountFn<string>
@@ -120,12 +106,11 @@ export type OrmFunctionReturnType = Promise<Result<SQLResult, SQLError>>
 
 export interface OrmFunctions {
   createTable: CreateTableFn<OrmFunctionReturnType>
-  createVirtualTable: CreateVirtualTableFn<OrmFunctionReturnType>
   find: FindFn<OrmFunctionReturnType>
   select: SelectFn<OrmFunctions>
-  match: MatchFn<OrmFunctions>
   distinct: DistinctFn<OrmFunctions>
   where: WhereFn<OrmFunctions>
+  whereMatch: WhereMatchFn<OrmFunctions>
   orderBy: OrderByFn<OrmFunctions>
   limit: LimitFn<OrmFunctions>
   count: CountFn<OrmFunctionReturnType>
