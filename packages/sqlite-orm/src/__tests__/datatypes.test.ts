@@ -39,7 +39,7 @@ describe("sqlite-orm", () => {
       stmt = datatypes().unsigned().int().nullable().build()
       expect(stmt).toBe("UNSIGNED INT")
 
-      stmt = datatypes().int().unsigned().nullable().build()
+      stmt = datatypes().unsigned().int().nullable().build()
       expect(stmt).toBe("UNSIGNED INT")
     })
 
@@ -47,13 +47,13 @@ describe("sqlite-orm", () => {
       let stmt = datatypes().double().nullable().build()
       expect(stmt).toBe("DOUBLE")
 
-      stmt = datatypes().double().unsigned().nullable().build()
+      stmt = datatypes().unsigned().double().nullable().build()
       expect(stmt).toBe("UNSIGNED DOUBLE")
 
       stmt = datatypes().float().nullable().build()
       expect(stmt).toBe("FLOAT")
 
-      stmt = datatypes().float().unsigned().nullable().build()
+      stmt = datatypes().unsigned().float().nullable().build()
       expect(stmt).toBe("UNSIGNED FLOAT")
     })
 
@@ -103,16 +103,15 @@ describe("sqlite-orm", () => {
 
     test("all stmt", () => {
       let stmt = datatypes()
+        .integer()
         .primary()
         .index()
-        .foreign("customers", "user_id", ["delete", "cascade"])
         .unique()
         .string()
         .char()
         .text()
         .unsigned()
         .int()
-        .integer()
         .tinyInt()
         .smallInt()
         .mediumInt()
@@ -122,11 +121,12 @@ describe("sqlite-orm", () => {
         .date()
         .dateTime()
         .default("Test")
+        .foreign("customers", "user_id", ["delete", "cascade"])
         .build()
 
       expect(stmt).toBe(
         // prettier-ignore
-        "INDEX VARCHAR(255) CHAR(255) TEXT UNSIGNED INT INTEGER TINYINT SMALLINT MEDIUMINT BIGINT DOUBLE FLOAT DATE DATETIME UNIQUE PRIMARY KEY NOT NULL DEFAULT 'Test' FOREIGN_KEY:[\"customers\",\"user_id\",\"delete\",\"cascade\"]:"
+        "INTEGER PRIMARY KEY INDEX UNIQUE VARCHAR(255) CHAR(255) TEXT UNSIGNED INT TINYINT SMALLINT MEDIUMINT BIGINT DOUBLE FLOAT DATE DATETIME DEFAULT 'Test' FOREIGN_KEY:[\"customers\",\"user_id\",\"delete\",\"cascade\"]:"
       )
     })
   })
