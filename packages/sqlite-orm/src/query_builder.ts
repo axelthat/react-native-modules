@@ -191,6 +191,9 @@ export default function queryBuilder(tableName: string): QueryBuilder {
     limit: (limitCount = 1) => {
       clauses.limit = limitCount
     },
+    offset: offset => {
+      clauses.offset = offset
+    },
     count: () => {
       const stmt = `SELECT COUNT(${clauses.selectClause}) FROM ${tableName}`
 
@@ -198,8 +201,7 @@ export default function queryBuilder(tableName: string): QueryBuilder {
 
       return stmt
     },
-    find: (offsetCount = 0) => {
-      clauses.offset = offsetCount
+    find: () => {
       const stmt = appendClause(
         `SELECT${clauses.selectDistinct ? "DISTINCT" : ""} ${
           clauses.selectClause

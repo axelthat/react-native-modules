@@ -62,6 +62,10 @@ export const useOrm = (
       builder.limit(...args)
       return this
     },
+    offset(...args) {
+      builder.offset(...args)
+      return this
+    },
     orderBy(...args) {
       builder.orderBy(...args)
       return this

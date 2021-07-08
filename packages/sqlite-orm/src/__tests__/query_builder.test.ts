@@ -159,6 +159,14 @@ describe("sqlite-orm", () => {
       )
     })
 
+    test("offset", () => {
+      builder.offset(3)
+      let res = builder.find()
+      expect(res.replace(REGEX, "")).toBe(
+        `SELECT * FROM users OFFSET 3`.replace(REGEX, "")
+      )
+    })
+
     test("count", () => {
       let res = builder.count()
       expect(res.replace(REGEX, "")).toBe(
@@ -177,8 +185,9 @@ describe("sqlite-orm", () => {
       builder.where("name", "=", "Alexa")
       builder.orderBy("name", "ASC")
       builder.limit(15)
+      builder.offset(12)
 
-      let res = builder.find(12)
+      let res = builder.find()
       expect(res.replace(REGEX, "")).toBe(
         `
         SELECT name,surname FROM users WHERE name='Alexa' ORDER BY name ASC LIMIT 15 OFFSET 12
@@ -186,8 +195,9 @@ describe("sqlite-orm", () => {
       )
 
       builder.limit(10)
+      builder.offset(10)
       builder.distinct()
-      res = builder.find(10)
+      res = builder.find()
 
       expect(res.replace(REGEX, "")).toBe(
         `
@@ -305,9 +315,10 @@ describe("sqlite-orm", () => {
       builder.where("name", "=", "Alexa Adonis")
       builder.orderBy("surname", "DESC")
       builder.limit(20)
+      builder.offset(20)
       builder.distinct()
 
-      let res = builder.find(20)
+      let res = builder.find()
       expect(res.replace(REGEX, "")).toBe(
         `
         SELECT DISTINCT name,surname FROM users WHERE name='Alexa Adonis' ORDER BY surname DESC LIMIT 20 OFFSET 20

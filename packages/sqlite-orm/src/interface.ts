@@ -59,6 +59,11 @@ type OrderByFn<T> = (field: string, sortOpt: "ASC" | "DESC") => T
 type LimitFn<T> = (limit?: number) => T
 
 /**
+ * @param offset - Number of rows to skip
+ */
+type OffsetFn<T> = (offset: number) => T
+
+/**
  * @param fields - Fields to insert into a table
  */
 type InsertFn<T> = <F = FieldsType>(fields: F) => T
@@ -68,12 +73,7 @@ type InsertFn<T> = <F = FieldsType>(fields: F) => T
  */
 type UpdateFn<T> = <F = FieldsType>(fields: F) => T
 
-/**
- * @param offset - Offset to skip rows from
- *
- * @param limit - Amount of rows to fetch after offset
- */
-type FindFn<T> = (offset?: number) => T
+type FindFn<T> = () => T
 
 /**
  * @param keyword - Search keyword
@@ -90,6 +90,7 @@ export interface QueryBuilder {
   where: WhereFn<void>
   whereMatch: WhereMatchFn<void>
   orderBy: OrderByFn<void>
+  offset: OffsetFn<void>
   limit: LimitFn<void>
   count: CountFn<string>
   insert: InsertFn<[string, any]>
@@ -112,6 +113,7 @@ export interface OrmFunctions {
   where: WhereFn<OrmFunctions>
   whereMatch: WhereMatchFn<OrmFunctions>
   orderBy: OrderByFn<OrmFunctions>
+  offset: OffsetFn<OrmFunctions>
   limit: LimitFn<OrmFunctions>
   count: CountFn<OrmFunctionReturnType>
   insert: InsertFn<OrmFunctionReturnType>
