@@ -1,7 +1,7 @@
 {
   "name": "@rnmodules/modal",
   "version": "0.1.27",
-  "repository": "https://github.com/thestrawhats/react-native-modules/blob/main/packages/modal",
+  "repository": "https://github.com/thestrawhats/react-native-modules",
   "author": "Axel",
   "license": "MIT",
   "main": "dist/lib/index.js",
