@@ -25,10 +25,12 @@ jobs:
           echo "PACKAGE="$PACKAGE"" >> $GITHUB_ENV
           echo "WORKING_DIR="./packages/$PACKAGE"" >> $GITHUB_ENV
 
+      - name: Test
+        run: yarn test
+
       - name: Release to NPM
         run: |
           yarn
-          yarn test
           yarn build
           cp {package.json,LICENSE,CHANGELOG.md} dist
           cd dist && yarn release
